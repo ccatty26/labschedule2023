@@ -1,0 +1,234 @@
+<script>
+function rgbToHex(rgb) {
+  let r = parseInt(rgb.split(',')[0].slice(4));
+  let g = parseInt(rgb.split(',')[1].trim());
+  let b = parseInt(rgb.split(',')[2].trim().slice(0, -1));
+  return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+}
+
+function searchAndDisplay() {
+  const searchInput = document.querySelector('.searchinp');
+  const searchTerm = searchInput.value;
+   const container = document.querySelector("table");
+   const rows = container.querySelectorAll('tr:not(.table_first)');
+   let selectWeekNum = document.querySelector(".selectweeknum");
+   const anim = document.querySelector(".loader-container");
+   rows.forEach(row => {
+  row.remove();
+});
+anim.style.display="flex";
+  google.script.run.withSuccessHandler(function(data){
+    projectData = JSON.parse(data.data);
+    //console.log(data);
+      console.log(projectData.length);
+      if( projectData.length===0){
+        const rowDiv = document.createElement('tr');
+      rowDiv.classList.add('grid-row');
+      rowDiv.innerHTML = `<td colspan="6" style="font-weight:800">No result</td>`
+container.appendChild(rowDiv);
+    setTimeout(function() {
+    anim.style.display="none"},1200);
+      }
+       for (let i = 0; i < projectData.length; i++) {
+
+      const rowDiv = document.createElement('tr');
+      rowDiv.classList.add('grid-row');
+      var time1;
+      var time2;
+       time1 = projectData[i][3];
+       time2= projectData[i][5];
+       var formattedDate1;
+       var formattedDate2;
+
+         formattedDate1 = time1.substring(6, 17).replace("T", " ");
+        formattedDate1 = formattedDate1.replace("-","/");
+        formattedDate2 = time2.substring(6, 17).replace("T", " ");
+        formattedDate2 = formattedDate2.replace("-","/");
+        
+      rowDiv.innerHTML = `
+          <td>`+projectData[i][0]+`</td>`+
+        `<td>`+projectData[i][1]+`</td>`+
+        `<td>`+projectData[i][2]+`</td>`+
+        `<td>`+formattedDate1+`</td>`+
+        `<td class="goto">`+projectData[i][4]+`</td>`+
+        `<td>`+formattedDate2+`</td>`;
+      container.appendChild(rowDiv);
+    setTimeout(function() {
+    anim.style.display="none"},1200);
+   } 
+    const goto=document.querySelectorAll(".goto");
+goto.forEach(element =>{
+  element.addEventListener("click",function(){
+    anim.style.display="flex";
+    const gototext=this.textContent.trim();
+    console.log(gototext);
+    [wknb,yearnb]=gototext.split("-");
+    selectWeekNum.selectedIndex = parseInt(wknb)-1;
+    let selectedWeekNum = selectWeekNum.textContent;
+    const today = new Date(); 
+    let year=today.getFullYear();
+    let date = getDateFromWeekNum(selectedWeekNum,year);
+    google.script.run.withSuccessHandler(function(data){
+      for (let i=1;i<5;i++){
+       dataspans[i].classList.remove("marker"); 
+      }
+      //projectData = JSON.parse(data); 
+   for (let i = 0; i < 7; i++) {
+       day = date.getDay();
+       dayOfMonth = date.getDate();
+      daySpans[i].textContent = getDayName(day) + "\n" + dayOfMonth;
+      date.setDate(date.getDate() + 1);
+      
+     
+     for(let j=0;j<data.length;j++){
+       //console.log(data[j],date.toISOString().substring(0, 10));
+       if(date.toISOString().substring(0, 10)==data[j]){
+         dataspans[i+1].classList.add("marker");
+       }
+     }
+    }}).getPublicHolidays(year);
+  var toggle = document.querySelector('.tog');
+     if (toggle.checked){
+ google.script.run.withSuccessHandler(function(selectList) {
+  let gantcontainer = document.querySelector(".reset");
+  gantcontainer.innerHTML = "";
+  selectList.forEach(item => {
+    item = JSON.stringify(item);
+    item = item.slice(2,-2);
+    [gmao_name, gmao_number] = item.split("‐");
+    let row = '<div class="gantt__row">' +
+      '<div class="gantt__row-first">' + gmao_number + "<br><span class='gmao_name'>" + gmao_name + "</span>" + '</div><ul class="gantt__row-bars">' +
+      '</ul></div>';
+    gantcontainer.innerHTML += row;
+  });
+  google.script.run.withSuccessHandler(function (data) {
+    const temp = JSON.parse(data.data);
+    const rowFirstElements = document.querySelectorAll('.gantt__row-first');
+    let alreadyCreated = {};
+    for (let i = 0; i < temp.length; i++) {
+      rowFirstElements.forEach((element) => {
+        const textContent = element.textContent.trim();
+        let machine = temp[i][0].trim();
+        let nb = textContent.substring(0,7);
+                nb = nb.normalize('NFKC').toLowerCase();
+        machine = machine.normalize('NFKC').toLowerCase();
+        if (nb === machine && !alreadyCreated[temp[i][0]]) {
+          const t_span = document.createElement('div');
+          t_span.textContent = temp[i][1] + "℃";
+          t_span.classList.add('t_set');
+          element.appendChild(t_span);
+          alreadyCreated[temp[i][0]] = true;
+        }
+      });
+    }
+  }).getSelectList3();
+}).getSelectList1();
+}
+    else{
+      google.script.run.withSuccessHandler(function(selectList) {
+        let gantcontainer = document.querySelector(".reset");
+      gantcontainer.innerHTML=""
+  selectList.forEach(item => {
+      item = JSON.stringify(item);
+      item=item.slice(2,-2);
+      let row = '<div class="gantt__row">' +
+        '<div class="gantt__row-first">' + item + '</div><ul class="gantt__row-bars">' +
+        '</ul></div>';
+      gantcontainer.innerHTML += row;
+    });}).getSelectList2();
+
+    }
+  setTimeout(function() {
+  let selectWeekNum = document.querySelector(".selectweeknum");
+  let selectedWeekNum = selectWeekNum.textContent;
+  createGanttChart(selectedWeekNum);
+  setTimeout(function() {
+    anim.style.display="none"},2000);
+}, 800);
+ 
+
+  })
+
+
+})
+
+  }).search_match(searchTerm);
+}
+const searchInput = document.querySelector('.searchinp');
+const container = document.querySelector(".table_container");
+searchInput.addEventListener('keydown', event => {
+  if (event.key === "Enter") {
+    searchAndDisplay();
+    searchInput.value="";
+    container.style.display="block";
+  
+  }
+  
+});
+const hidetable=container.querySelector('span');
+const table = document.querySelector("table");
+hidetable.addEventListener("click",function(){
+  if(hidetable.textContent==="Hide"){
+  table.style.display='none';
+  hidetable.textContent="Show search results"
+  hidetable.style.left="2%";}
+  else{
+    table.style.display='table';
+    hidetable.textContent="Hide"
+    hidetable.style.left="72.5%";
+    }
+})
+// Get the task and gmao elements using their classes
+const $task = $('.task');
+const $gmao = $('.gmao');
+
+// Listen for changes to the task input
+$task.on('input', function() {
+  const taskValue = $(this).val();
+  
+  // Check if the task input contains a temperature value
+  if (taskValue.includes('°C')) {
+    // Get the temperature from the task input
+    let temperature = taskValue.match(/(\d+)°C/)[1];
+    temperature=parseInt(temperature);
+    console.log(temperature);
+    // Get the t_oven list from the data source using getSelectList3()
+    google.script.run.withSuccessHandler(function(response){
+      let t_oven=JSON.parse(response.data);
+     // console.log(t_oven);
+ // Find the matching AGINxx value for the selected temperature
+    const selectedAGINxx = t_oven.find(([_, temp]) => temp === temperature);
+  console.log(selectedAGINxx);
+    // Filter the gmao select to the matching index
+    $gmao.find('option').filter(function() {
+      return $(this).text().includes(selectedAGINxx[0]);
+    }).prop('selected', true);
+    }).getSelectList3();
+
+   
+  }
+});
+
+var helpButton = document.getElementById("help-button");
+var body = document.body;
+
+helpButton.addEventListener("click", function() {
+  body.classList.add("show-help");
+  var helpText = null;
+ helpButton.style.color='#f07e26'
+body.addEventListener("mouseover", function(event) {
+  var target = event.target;
+  var helpId = target.getAttribute("data-help");
+  console.log(helpId);
+  
+});
+ });
+document.addEventListener("keydown", function(event) {
+  if (event.key === "Escape") {
+    body.classList.remove("show-help");
+    helpButton.style.color='#444'
+  }
+});
+
+
+</script>
