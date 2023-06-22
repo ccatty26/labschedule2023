@@ -117,6 +117,2149 @@
 <span class="sign">Camille CATTY©2023</span><div id="help-button" data-help="Press Esc to Quit Help mode">?</div>
       </body>
     
+<script>
+   const anim=document.querySelector(".loader-container");
+let selectWeekNum = document.querySelector(".selectweeknum");
+const dataspans = document.querySelectorAll(".data");
+const daySpans = document.querySelectorAll(".day");
+  const monthSpan = document.querySelector(".month");
+selectWeekNum.addEventListener("change", function() {
+  anim.style.display = "flex"
+  let selectedWeekNum = selectWeekNum.textContent;
+  var toggle = document.querySelector('.tog');
+     if (toggle.checked){
+ google.script.run.withSuccessHandler(function(selectList) {
+  let gantcontainer = document.querySelector(".reset");
+  gantcontainer.innerHTML = "";
+  selectList.forEach(item => {
+    item = JSON.stringify(item);
+    item = item.slice(2,-2);
+    [gmao_number, gmao_name] = item.split("-");
+    let row = '<div class="gantt__row">' +
+      '<div class="gantt__row-first">' + gmao_number + "<br><span class='gmao_name'>" + gmao_name + "</span>" + '</div><ul class="gantt__row-bars">' +
+      '</ul></div>';
+    gantcontainer.innerHTML += row;
+  });
+  google.script.run.withSuccessHandler(function (data) {
+    const temp = JSON.parse(data.data);
+    const rowFirstElements = document.querySelectorAll('.gantt__row-first');
+    let alreadyCreated = {};
+    for (let i = 0; i < temp.length; i++) {
+      rowFirstElements.forEach((element) => {
+        const textContent = element.textContent.trim();
+        let machine = temp[i][0].trim();
+        let nb = textContent.substring(0,7);
+                nb = nb.normalize('NFKC').toLowerCase();
+        machine = machine.normalize('NFKC').toLowerCase();
+        if (nb === machine && !alreadyCreated[temp[i][0]]) {
+          const t_span = document.createElement('div');
+          t_span.textContent = temp[i][1] + "℃";
+          t_span.classList.add('t_set');
+          element.appendChild(t_span);
+          alreadyCreated[temp[i][0]] = true;
+        }
+      });
+    }
+  }).getSelectList3();
+}).getSelectList1();
+}
+    else{
+      google.script.run.withSuccessHandler(function(selectList) {
+        let gantcontainer = document.querySelector(".reset");
+      gantcontainer.innerHTML=""
+  selectList.forEach(item => {
+      item = JSON.stringify(item);
+      item=item.slice(2,-2);
+      let row = '<div class="gantt__row">' +
+        '<div class="gantt__row-first">' + item + '</div><ul class="gantt__row-bars">' +
+        '</ul></div>';
+      gantcontainer.innerHTML += row;
+    });}).getSelectList2();
+
+    }
+     setTimeout(function() {
+  let selectWeekNum = document.querySelector(".selectweeknum")[document.querySelector(".selectweeknum").selectedIndex];
+  let selectedWeekNum = selectWeekNum.textContent;
+  createGanttChart(selectedWeekNum);
+const today = new Date(); 
+    let year=today.getFullYear();
+    let date = getDateFromWeekNum(selectedWeekNum,year);
+    
+    // Update the day spans
+    google.script.run.withSuccessHandler(function(data){
+      for (let i=1;i<=5;i++){
+       dataspans[i].classList.remove("marker"); 
+      }
+      //projectData = JSON.parse(data); 
+   for (let i = 0; i < 7; i++) {
+       day = date.getDay();
+       dayOfMonth = date.getDate();
+      daySpans[i].textContent = getDayName(day) + "\n" + dayOfMonth;
+      date.setDate(date.getDate() + 1);
+      
+     
+     for(let j=0;j<data.length;j++){
+       //console.log(data[j],date.toISOString().substring(0, 10));
+       if(date.toISOString().substring(0, 10)==data[j]){
+         dataspans[i+1].classList.add("marker");
+       }
+     }
+    }}).getPublicHolidays(year);
+
+    // Update the month span
+    monthSpan.textContent = getMonthName(date.getMonth())+" "+year;
+}, 800);
+setTimeout(function() {
+    anim.style.display="none"},2000);
+});
+let prevWeek = document.querySelector(".prev-week");
+prevWeek.addEventListener("click", function() {
+  anim.style.display="flex";
+  let selectedIndex = selectWeekNum.selectedIndex;
+  var toggle = document.querySelector('.tog');
+  [month,yearsel]=monthSpan.textContent.split(" ");
+  //console.log(yearsel);
+  if (selectedIndex > 0) {
+    selectWeekNum.selectedIndex--;}
+    else{
+      selectWeekNum.selectedIndex=selectWeekNum.options.length - 1
+      }
+    let selectedWeekNum = selectWeekNum.textContent;
+    if (toggle.checked){
+ google.script.run.withSuccessHandler(function(selectList) {
+  let gantcontainer = document.querySelector(".reset");
+  gantcontainer.innerHTML = "";
+  selectList.forEach(item => {
+    item = JSON.stringify(item);
+    item = item.slice(2,-2);
+    [gmao_number, gmao_name] = item.split("-");
+    let row = '<div class="gantt__row">' +
+      '<div class="gantt__row-first">' + gmao_number + "<br><span class='gmao_name'>" + gmao_name + "</span>" + '</div><ul class="gantt__row-bars">' +
+      '</ul></div>';
+    gantcontainer.innerHTML += row;
+  });
+  google.script.run.withSuccessHandler(function (data) {
+    const temp = JSON.parse(data.data);
+    const rowFirstElements = document.querySelectorAll('.gantt__row-first');
+    let alreadyCreated = {};
+    for (let i = 0; i < temp.length; i++) {
+      rowFirstElements.forEach((element) => {
+        const textContent = element.textContent.trim();
+        let machine = temp[i][0].trim();
+        let nb = textContent.substring(0,7);
+                nb = nb.normalize('NFKC').toLowerCase();
+        machine = machine.normalize('NFKC').toLowerCase();
+        if (nb === machine && !alreadyCreated[temp[i][0]]) {
+          const t_span = document.createElement('div');
+          t_span.textContent = temp[i][1] + "℃";
+          t_span.classList.add('t_set');
+          element.appendChild(t_span);
+          alreadyCreated[temp[i][0]] = true;
+        }
+      });
+    }
+  }).getSelectList3();
+}).getSelectList1();
+}
+    else{
+      google.script.run.withSuccessHandler(function(selectList) {
+        let gantcontainer = document.querySelector(".reset");
+      gantcontainer.innerHTML=""
+  selectList.forEach(item => {
+      item = JSON.stringify(item);
+      item=item.slice(2,-2);
+      let row = '<div class="gantt__row">' +
+        '<div class="gantt__row-first">' + item + '</div><ul class="gantt__row-bars">' +
+        '</ul></div>';
+      gantcontainer.innerHTML += row;
+    });}).getSelectList2();
+
+    }
+     setTimeout(function() {
+  let selectWeekNum = document.querySelector(".selectweeknum")[document.querySelector(".selectweeknum").selectedIndex];
+  let selectedWeekNum = selectWeekNum.textContent;
+  createGanttChart(selectedWeekNum);
+  const today = new Date(); 
+    let year=today.getFullYear();
+    let date = getDateFromWeekNum(selectedWeekNum,year);
+    
+    // Update the day spans
+    google.script.run.withSuccessHandler(function(data){
+      for (let i=1;i<5;i++){
+       dataspans[i].classList.remove("marker"); 
+      }
+      //projectData = JSON.parse(data); 
+   for (let i = 0; i < 7; i++) {
+       day = date.getDay();
+       dayOfMonth = date.getDate();
+      daySpans[i].textContent = getDayName(day) + "\n" + dayOfMonth;
+      date.setDate(date.getDate() + 1);
+      
+     
+     for(let j=0;j<data.length;j++){
+       //console.log(data[j],date.toISOString().substring(0, 10));
+       if(date.toISOString().substring(0, 10)==data[j]){
+         dataspans[i+1].classList.add("marker");
+       }
+     }
+    }}).getPublicHolidays(year);
+
+    // Update the month span
+    monthSpan.textContent = getMonthName(date.getMonth())+" "+yearsel;
+  if(selectedIndex === 0){
+    yearsel=parseInt(yearsel)-1;
+      monthSpan.textContent = month+" "+yearsel;
+  }
+  setTimeout(function() {
+    anim.style.display="none"},2000);
+}, 800);
+  
+});
+
+let nextWeek = document.querySelector(".next-week");
+nextWeek.addEventListener("click", function() {
+  anim.style.display="flex";
+  let selectedIndex = selectWeekNum.selectedIndex;
+  var toggle = document.querySelector('.tog');
+  [month,yearsel]=monthSpan.textContent.split(" ");
+  if (selectedIndex < selectWeekNum.options.length - 1) {
+    //console.log(selectWeekNum.options.length - 1);
+    selectWeekNum.selectedIndex++;
+    }
+    else if(selectedIndex>=selectWeekNum.options.length - 1){
+      selectWeekNum.selectedIndex=0;
+    }
+    let selectedWeekNum = selectWeekNum.textContent;
+if (toggle.checked){
+  google.script.run.withSuccessHandler(function(selectList) {
+  let gantcontainer = document.querySelector(".reset");
+  gantcontainer.innerHTML = "";
+  selectList.forEach(item => {
+    item = JSON.stringify(item);
+    item = item.slice(2,-2);
+    [gmao_number, gmao_name] = item.split("-");
+    let row = '<div class="gantt__row">' +
+      '<div class="gantt__row-first">' + gmao_number + "<br><span class='gmao_name'>" + gmao_name + "</span>" + '</div><ul class="gantt__row-bars">' +
+      '</ul></div>';
+    gantcontainer.innerHTML += row;
+  });
+  google.script.run.withSuccessHandler(function (data) {
+    const temp = JSON.parse(data.data);
+    const rowFirstElements = document.querySelectorAll('.gantt__row-first');
+    let alreadyCreated = {};
+    for (let i = 0; i < temp.length; i++) {
+      rowFirstElements.forEach((element) => {
+        const textContent = element.textContent.trim();
+        let machine = temp[i][0].trim();
+        let nb = textContent.substring(0,7);
+                nb = nb.normalize('NFKC').toLowerCase();
+        machine = machine.normalize('NFKC').toLowerCase();
+        if (nb === machine && !alreadyCreated[temp[i][0]]) {
+          const t_span = document.createElement('div');
+          t_span.textContent = temp[i][1] + "℃";
+          t_span.classList.add('t_set');
+          element.appendChild(t_span);
+          alreadyCreated[temp[i][0]] = true;
+        }
+      });
+    }
+  }).getSelectList3();
+}).getSelectList1();
+}
+    else{
+      google.script.run.withSuccessHandler(function(selectList) {
+        let gantcontainer = document.querySelector(".reset");
+      gantcontainer.innerHTML=""
+  selectList.forEach(item => {
+      item = JSON.stringify(item);
+      item=item.slice(2,-2);
+      let row = '<div class="gantt__row">' +
+        '<div class="gantt__row-first">' + item + '</div><ul class="gantt__row-bars">' +
+        '</ul></div>';
+      gantcontainer.innerHTML += row;
+    });}).getSelectList2();
+
+    }
+     setTimeout(function() {
+  let selectWeekNum = document.querySelector(".selectweeknum")[document.querySelector(".selectweeknum").selectedIndex];
+  let selWeekNum = document.querySelector(".selectweeknum");
+  let selectedWeekNum = selectWeekNum.textContent;
+  createGanttChart(selectedWeekNum);
+  setTimeout(function() {
+    anim.style.display="none"},2000);
+  const today = new Date(); 
+    let year=today.getFullYear();
+    let date = getDateFromWeekNum(selectedWeekNum,year);
+    //console.log(date);
+    // Update the day spans
+    google.script.run.withSuccessHandler(function(data){
+      for (let i=1;i<5;i++){
+       dataspans[i].classList.remove("marker"); 
+      }
+      //projectData = JSON.parse(data); 
+   for (let i = 0; i < 7; i++) {
+       day = date.getDay();
+       dayOfMonth = date.getDate();
+      daySpans[i].textContent = getDayName(day) + "\n" + dayOfMonth;
+      date.setDate(date.getDate() + 1);
+      
+     
+     for(let j=0;j<data.length;j++){
+       console.log(data[j],date.toISOString().substring(0, 10));
+       if(date.toISOString().substring(0, 10)==data[j]){
+         dataspans[i+1].classList.add("marker");
+
+       }
+     }
+    }}).getPublicHolidays(year);
+
+    // Update the month span
+    monthSpan.textContent = getMonthName(date.getMonth())+" "+yearsel;
+  if(selectedIndex>=selWeekNum.options.length - 1){
+    yearsel=parseInt(yearsel)+1;
+      monthSpan.textContent = month+" "+yearsel;
+  }
+}, 800);
+  
+});
+ 
+
+ function addatask(swatch){
+  let gmao= document.querySelector('.gmao')[document.querySelector('.gmao').selectedIndex].value;
+  let name = document.querySelector('.people')[document.querySelector('.people').selectedIndex].value;
+  let task= document.querySelector(".task").value;
+    let startTime = document.querySelector(".start-date").value;
+  let colour = window.getComputedStyle(swatch).getPropertyValue('background-color');
+  let hexColor = rgbToHex(colour);
+  let formattedDate = startTime.toLocaleString('sv', {year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'}).replace(/\./g, '-').replace(' ', 'T');
+  var prev;
+  if  (document.querySelector(".checkp").checked===true ){
+     prev=1;}
+   else {prev=0;}
+  let timeinp = document.querySelectorAll('.grid-container input')
+  const inputs = Array.from(timeinp);
+const values = inputs.map(input => input.value || 0);
+const formattedValues = values.map(value => value.toString().replace(".", ","));
+  let isFilled = false;
+  timeinp.forEach((input) => {
+    if (input.value && gmao && name && task && startTime) {
+      isFilled = true;
+    }
+  });
+  if (!isFilled) {
+    //console.log(timeinp);
+    //console.log(gmao);
+    //console.log(name);
+    //console.log(task);
+    //console.log(startTime);
+    event.preventDefault();
+    alert('Please fill in the required fields.');
+     return;
+  }
+  let newEvent1 = [hexColor, prev,0]
+  let newEvent = [gmao, name,task,formattedDate];
+  newEvent = newEvent.concat(...formattedValues);
+  newEvent = newEvent.concat(newEvent1)
+  return newEvent
+}
+function addamilestone(swatch,indice){
+  //console.log("indice:"+indice);
+  let gmao= document.querySelector('.gmao')[document.querySelector('.gmao').selectedIndex].value;
+  let name = document.querySelector('.people')[document.querySelector('.people').selectedIndex].value;
+  let task= document.querySelector(".task").value;
+  task = task +"- Milestone #"+indice;
+    let startTime = document.querySelector(".start-date").value;
+  let colour = window.getComputedStyle(swatch).getPropertyValue('background-color');
+  let hexColor = rgbToHex(colour);
+  let formattedDate = startTime.toLocaleString('sv', {year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'}).replace(/\./g, '-').replace(' ', 'T');
+  let startmile=document.getElementById(`startfrom${indice}`)
+  let valstart=startmile.value;
+  let dateObject=new Date(formattedDate);
+  dateObject.setHours(dateObject.getHours()+parseInt(valstart));
+  let newformatdate=dateObject.toLocaleString('sv', {year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'}).replace(/\./g, '-').replace(' ', 'T');
+  var prev;
+  if  (document.querySelector(".checkp").checked===true ){
+     prev=1;}
+   else {prev=0;}
+   let timeinp = document.getElementById(`durfrom${indice}`);
+   let values = timeinp.value;
+  let newEvent = [gmao, name,task,newformatdate,values,0,0,0,0,0,hexColor, prev,0];
+  return newEvent
+}
+var toggle = document.querySelector('.tog');
+
+var toggleText = document.querySelector('.optxt');
+var toggleText1 = document.querySelector('.matxt');
 
 
+toggle.addEventListener('click', function() {
+  anim.style.display="flex";
+  if (toggle.checked) {
+    
+    toggleText1.style.color = '#f07e26';
+    toggleText.style.color = '';
+google.script.run.withSuccessHandler(function(selectList) {
+  let gantcontainer = document.querySelector(".reset");
+  gantcontainer.innerHTML = "";
+  selectList.forEach(item => {
+    item = JSON.stringify(item);
+    item = item.slice(2,-2);
+    [gmao_number, gmao_name] = item.split("-");
+    let row = '<div class="gantt__row">' +
+      '<div class="gantt__row-first">' + gmao_number + "<br><span class='gmao_name'>" + gmao_name + "</span>" + '</div><ul class="gantt__row-bars">' +
+      '</ul></div>';
+    gantcontainer.innerHTML += row;
+  });
+  google.script.run.withSuccessHandler(function (data) {
+    const temp = JSON.parse(data.data);
+    const rowFirstElements = document.querySelectorAll('.gantt__row-first');
+    let alreadyCreated = {};
+    for (let i = 0; i < temp.length; i++) {
+      rowFirstElements.forEach((element) => {
+        const textContent = element.textContent.trim();
+        let machine = temp[i][0].trim();
+        let nb = textContent.substring(0,7);
+        nb = nb.normalize('NFKC').toLowerCase();
+        machine = machine.normalize('NFKC').toLowerCase();
+        if (nb === machine && !alreadyCreated[temp[i][0]]) {
+          const t_span = document.createElement('div');
+          t_span.textContent = temp[i][1] + "℃";
+          t_span.classList.add('t_set');
+          element.appendChild(t_span);
+          alreadyCreated[temp[i][0]] = true;
+        }
+      });
+    }
+
+  document.querySelector(".setbut").style.display = "block";
+  
+
+  }).getSelectList3();
+ 
+}).getSelectList1();
+
+  setTimeout(function() {
+  let selectWeekNum = document.querySelector(".selectweeknum");
+  let selectedWeekNum = selectWeekNum.textContent;
+  createGanttChart(selectedWeekNum);
+   const anim=document.querySelector(".loader-container");
+    setTimeout(function() {
+    anim.style.display="none"},2000);
+}, 800);
+    
+  } else {
+    
+    toggleText.style.color = '#f07e26';
+    toggleText1.style.color = '';
+google.script.run.withSuccessHandler(function(selectList) {
+  
+      let gantcontainer = document.querySelector(".reset");
+      gantcontainer.innerHTML=""
+  selectList.forEach(item => {
+      item = JSON.stringify(item);
+      item=item.slice(2,-2);
+      let row = '<div class="gantt__row">' +
+        '<div class="gantt__row-first">' + item + '</div><ul class="gantt__row-bars">' +
+        '</ul></div>';
+      gantcontainer.innerHTML += row;
+    });}).getSelectList2();
+     document.querySelector(".setbut").style.display = "none";
+    let selectWeekNum = document.querySelector(".selectweeknum");
+  let selectedWeekNum = selectWeekNum.textContent;
+  createGanttChart(selectedWeekNum);
+  setTimeout(function() {
+    anim.style.display="none"},2000);
+  }
+  
+});
+
+var tset= document.querySelector(".setbut")
+
+ let clickedOnce = false;
+tset.addEventListener("click",function(){
+   var temper = document.querySelector(".tempinp");
+var mach =document.getElementById("machlist")[document.getElementById('machlist').selectedIndex];
+    if (!clickedOnce){
+  document.querySelector(".sl_mac").style.display="flex";
+  clickedOnce=true;}
+  else{
+    anim.style.display = "flex"
+    google.script.run.withSuccessHandler(function(data){
+      var flag = data;
+    // console.log("flag: "+flag)
+     if (flag===false || window.confirm("A test is ongoing, are you sure you want to change the temperature?")){
+       setTimeout(function() {
+    anim.style.display="none"},2000);
+    google.script.run.withSuccessHandler(function(){
+clickedOnce = false
+ google.script.run.withSuccessHandler(function (data) {
+    const temp = JSON.parse(data.data);
+    const rowFirstElements = document.querySelectorAll('.gantt__row-first');
+    for (let i = 0; i < temp.length; i++) {
+      rowFirstElements.forEach((element) => {
+        const textContent = element.textContent.trim();
+        let nb = textContent.substring(0,7);
+        //nb = nb.normalize('NFKC').toLowerCase();
+        if (nb === mach.value) {
+          element.querySelector(".t_set").textContent=temper.value + "℃";
+          
+      }
+      });
+    }
+
+  document.querySelector(".setbut").style.display = "block";
+  
+
+  }).getSelectList3();
+  }).settemp(mach.value,temper.value);}
+  else{return}
+}).check_ongoing(mach.value);
+  document.querySelector(".sl_mac").style.display="none";
+  
+  }
+  
+})
+$(document).ready(function(){
+let swatches = document.querySelectorAll(".swatch");
+const swatchGrid = document.querySelector('#color-picker-dropdown #swatch-grid');
+const swheader= document.querySelector('#dropdown-header');
+
+const spansw= document.querySelector('#swatext');
+let colors = [
+  "#FE4A49",
+  "#49BDFE",
+  "#FECB49",
+  "#47A5D3",
+  "#44AC80",
+  "#917AED",
+  "#CD65B6",
+  "#75DDDD",
+  "#FC945A",
+  "#4B64A5",
+  "#FF75B7",
+  "#818181",
+  "#444444",
+  "#B3D459",
+  "#789CC0",
+  "#C6AB82"
+];
+var flag = false;
+swatches.forEach((swatch, i) => {
+  swatch.style.backgroundColor = colors[i];
+  swatch.addEventListener("click", () => {
+    const check = document.getElementById("check");
+    const currentParent = check.parentNode;
+    if (currentParent !== swatch) {
+      currentParent.removeChild(check);
+      currentParent.classList.remove("elchkd");
+      swatch.appendChild(check);
+    }
+    console.log("color is"+rgbToHex(window.getComputedStyle(swatch).getPropertyValue('background-color')));
+    swatch.classList.add('elchkd');
+    swatchGrid.style.display = 'none';
+    swatext.textContent="Color : ";
+    if (!flag){
+     swheader.appendChild(swatch);
+     //swheader.querySelector(".swatch").removeChild(check);
+     flag=true;}
+     else{
+       swheader.querySelector(".swatch").style.backgroundColor = colors[i];
+       
+     }
+     
+    console.log(swheader.innerHTML);
+
+  });
+});
+var incr=1
+
+$('#add-time').click(function() {
+    const newRow = $('<div class="gridrow" id="gridrow'+incr+'"></div>');
+    let timeinp = document.querySelectorAll('.time_container input')
+    const inputs = Array.from(timeinp);
+    const values = inputs.map(input => input.value);
+    const filteredvalues = values.filter(value => value !=="");
+    const sum = filteredvalues.reduce((accumulator, currentValue) => accumulator + parseFloat(currentValue), 0);
+
+        console.log(sum);
+        newRow.append("<div></div><div></div><div></div><div></div>");
+          newRow.append("<div><label for = 'startfrom' class='timinp lb_from' data-help='Enter the starting hour of your milestone'>START</label><input class='time plan_menu duration startfrom' type='number' id='startfrom"+incr+"' lang='fr' min='0' max="+sum+" data-help='Enter the starting hour of your milestone'></input></div>")
+            newRow.append("<div><label for = 'durfrom' class='timinp lb_from' data-help='Enter the duration of your milestone'>DURATION</label><input class='time plan_menu duration durfrom' type='number' id='durfrom"+incr+"'lang='fr' min='0' max="+sum+" data-help='Enter the duration of your milestone'></input></div>")
+            newRow.append("<div><label for = 'milestone_name' class='timinp lb_from' data-help='Enter the content of your milestone'>SUBTASK</label><input class='timinp lb_from plan_menu'></input></div>")
+          newRow.append("<div><p>Milestone #"+incr+"</p></div>")
+          newRow.append("<svg data-help='Click to remove this milestone' xmlns='http://www.w3.org/2000/svg' fill='none'  viewBox='0 0 24 24' stroke-width='1.12' stroke='#000000' class='minicon' id='minicon"+incr+"'><path stroke-linecap='round' stroke-linejoin='round' d='M11 6H8' /></svg>")
+let mem=document.querySelector(".editID");
+    
+   
+    $('.time_container').append(newRow);
+   // console.log(document.querySelector(".time_container").innerHTML);
+    let min=document.getElementById(`minicon${incr}`);
+    min.addEventListener("click",function(){
+      var incre;
+       //console.log("incr:"+incr);
+      incre=incr-1;
+      let todel=document.getElementById(`gridrow${incre}`);
+      todel.remove();
+      incr=incr-1;
+      mem.textContent=incr;
+    })
+incr=incr+1;
+
+      mem.textContent=incr;
+    
+  });
+
+
+  
+});
+
+let isListenerRunning = false;
+document.querySelector(".submit").addEventListener("click", function(event) {
+    event.preventDefault(); 
+    if (isListenerRunning) {
+    return;
+  }
+  isListenerRunning = true;
+    anim.style.display="flex";
+    
+  var newEvent;
+  let editid= document.querySelector('.editID');
+  let rowid= editid.textContent;
+  
+  //console.log(rowid);
+   let selectWeekNum = document.querySelector(".selectweeknum");
+  let selectedWeekNum = selectWeekNum.textContent;
+ 
+let swatch = document.querySelector(".elchkd");
+  if (this.classList.contains("flag")) {
+    newEvent = addatask(swatch);
+    console.log(newEvent);
+    if(newEvent===undefined){anim.style.display="none"; return}
+    const elementsToRemove = document.querySelectorAll('[id^="' + rowid + '"]');
+  elementsToRemove.forEach(element => {
+ element.parentNode.remove();
+});
+    google.script.run.withSuccessHandler(function(){
+google.script.run.withSuccessHandler(function(data){
+  
+ 
+      projectData = JSON.parse(data.rangeArray);    
+    //  console.log("data:"+projectData)
+    let toggle = document.querySelector('.tog');
+   let outputContainer = document.querySelector(".gantt");
+    let gantcontainer = document.querySelector(".reset");
+    let selectWeekNum = document.querySelector(".selectweeknum")[document.querySelector(".selectweeknum").selectedIndex];
+    let selectedWeekNum = selectWeekNum.textContent;
+     var style
+      let stweek = projectData[0][18];
+        [stwk , sty]=stweek.split("-");
+        let fweek=projectData[0][19];
+        [fwk , fy]=fweek.split("-");
+        let gmao=projectData[0][0];
+        [gmao_number,gmao_name]=gmao.split("-");
+        if (projectData[0][11]===1){style='class="stripes"'}
+        else if (projectData[0][12]===1){style='class="finished"'}
+        else {style=""}
+        [abv, wnm]=selectedWeekNum.split(" ");
+    [mnth, yearsel]=monthSpan.textContent.split(" ");
+     if (parseInt(wnm) >= parseInt(stwk) && parseInt(wnm) <= parseInt(fwk) ) {
+       if (parseInt(yearsel)=== parseInt(sty)|| parseInt(yearsel)===parseInt(fy)){
+
+        var tooltip;
+       
+        if (toggle.checked && (projectData[0][4] >= 0 || projectData[0][5] >= 0 || projectData[0][8] >= 0 || projectData[0][7] >= 0)) {
+  secondElement = gmao_number;
+  tooltip = projectData[0][1];
+  projectElements = [projectData[0][4], projectData[0][5], projectData[0][7], projectData[0][8]].filter(Boolean);
+  console.log(projectElements);
+} else if (!toggle.checked && (projectData[0][4] >= 0 || projectData[0][5] >= 0 || projectData[0][6] >= 0 || projectData[0][7] >= 0 || projectData[0][9] >= 0)) {
+  secondElement = projectData[0][1];
+  tooltip = gmao_number;
+  projectElements = [projectData[0][4], projectData[0][5], projectData[0][6], projectData[0][7], projectData[0][9]].filter(Boolean);
+} 
+var used;
+used=false;
+var used2;
+used2=false;
+var used3;
+used3=false;
+
+ if (projectElements.length > 0) {
+   for (let j = 0; j <= projectElements.length-1; j++) {
+         var start_day;
+         var end_day;
+         var subtitle;
+         var time1;
+         var time2;
+         var formattedDate1;
+         var formattedDate2;
+         if (projectData[0][6]===projectElements[j] && !used && !toggle.checked){
+           if (parseInt(wnm)===parseInt(stwk)){
+           start_day=projectData[0][16];
+           end_day = projectData[0][16];
+           subtitle = " - Preparation"
+           used=true
+            time1 = projectData[0][3];
+         formattedDate1 = time1.substring(6, 17).replace("T", " ");
+        formattedDate1 = formattedDate1.replace("-","/");
+         time2 = projectData[0][14];
+         formattedDate2 = time2.substring(6, 17).replace("T", " ");
+        formattedDate2 = formattedDate2.replace("-","/");
+           }
+           else{used=true; continue}
+         }
+         else if(projectData[0][9]===projectElements[j]&& !used2 && !toggle.checked){
+           if (parseInt(wnm)===parseInt(fwk)){
+           start_day=projectData[0][17];
+           end_day = projectData[0][17];
+           subtitle = " - End Phase"
+           used2=true
+             time1 = projectData[0][15];
+         formattedDate1 = time1.substring(6, 17).replace("T", " ");
+        formattedDate1 = formattedDate1.replace("-","/");
+         time2 = projectData[0][13];
+         formattedDate2 = time2.substring(6, 17).replace("T", " ");
+        formattedDate2 = formattedDate2.replace("-","/");
+           }
+           else{used2=true; continue}
+         }
+         else if(projectData[0][8]===projectElements[j]&& !used3 && toggle.checked) {
+           if(j>0){time1 = projectData[0][14];
+         formattedDate1 = time1.substring(6, 17).replace("T", " ");
+        formattedDate1 = formattedDate1.replace("-","/");
+        time2 = projectData[0][15];
+         formattedDate2 = time2.substring(6, 17).replace("T", " ");
+        formattedDate2 = formattedDate2.replace("-","/");}
+        else{time1 = projectData[0][3];
+         formattedDate1 = time1.substring(6, 17).replace("T", " ");
+        formattedDate1 = formattedDate1.replace("-","/");
+        time2 = projectData[0][13];
+         formattedDate2 = time2.substring(6, 17).replace("T", " ");
+        formattedDate2 = formattedDate2.replace("-","/");}
+           used3=true;
+           subtitle="";
+         if(parseInt(fwk)===parseInt(stwk)) {
+           start_day=projectData[0][16];
+           end_day=projectData[0][17];
+         }
+         else if (parseInt(wnm) === parseInt(parseInt(stwk))){
+           start_day=projectData[0][16];
+            end_day="8";
+         }
+         else if (parseInt(wnm) === parseInt(parseInt(fwk))){
+           end_day=projectData[0][17];
+            start_day="1";
+         }
+         else {
+           start_day="1";
+           end_day="8";
+         }}
+         else if(!used3 && projectData[0][8]!==projectElements[j]) {
+           if(j>0){time1 = projectData[0][14];
+         formattedDate1 = time1.substring(6, 17).replace("T", " ");
+        formattedDate1 = formattedDate1.replace("-","/");
+        time2 = projectData[0][15];
+         formattedDate2 = time2.substring(6, 17).replace("T", " ");
+        formattedDate2 = formattedDate2.replace("-","/");}
+        else{time1 = projectData[0][3];
+         formattedDate1 = time1.substring(6, 17).replace("T", " ");
+        formattedDate1 = formattedDate1.replace("-","/");
+        time2 = projectData[0][13];
+         formattedDate2 = time2.substring(6, 17).replace("T", " ");
+        formattedDate2 = formattedDate2.replace("-","/");}
+           used3=true;
+           subtitle="";
+         if(parseInt(fwk)===parseInt(stwk)) {
+           start_day=projectData[0][16];
+           end_day=projectData[0][17];
+         }
+         else if (parseInt(wnm) === parseInt(parseInt(stwk))){
+           start_day=projectData[0][16];
+            end_day="8";
+         }
+         else if (parseInt(wnm) === parseInt(parseInt(fwk))){
+           end_day=projectData[0][17];
+            start_day="1";
+         }
+         else {
+           start_day="1";
+           end_day="8";
+         }}
+        else{used3=true; continue}
+         if(parseInt(end_day)===0){
+           end_day="8";
+         }
+         if(parseInt(start_day)===0){
+           start_day="1";
+         }
+        
+      
+        let rowBars = '<li data-help="Click to open toolbox:\n ・Bin is to delete a task\n ・Pen is to edit \n ・Test tube is to change sample status \n ・Checkbox is to set the task to done" style="grid-column: ' + start_day + ' / ' + end_day + 
+         '; background-color:'+ projectData[0][10] + ';"'+style+'>' + projectData[0][2] + "<span style='font-size:12px';>"+subtitle+"</span>"+
+                      '<svg id ='+ projectData[0][20]+ '_'+[j]+' class= "trashbin icon" width="15" height="15" viewBox="0 0 22 22" fill= "#0a3444" xmlns="http://www.w3.org/2000/svg" >'+
+                      '<path  d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7H6V19ZM8 9V17H16V9H8ZM15.5 4L14.5 3H9.5L8.5 4H5V6H19V4H15.5Z" />'+
+                      '</svg><svg id ='+ projectData[0][20]+'_2'+[j]+' class= "edit icon" width="15" height="15" viewBox="0 0 22 22" fill= "#0a3444" xmlns="http://www.w3.org/2000/svg" >'+
+                    '<path  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>'+
+                        '</svg><svg id ='+ projectData[0][20]+'_3'+[j]+' class= "sple icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 22 22" fill= "#0a3444" >'+
+                        '<path   d="M6 2a1 1 0 0 0 0 2h1v13a5 5 0 0 0 10 0V4h1a1 1 0 1 0 0-2H6zm3 5V4h6v3H9zm4.708 5.708a1 1 0 0 1-1.414 0h-.001a1 1 0 0 1 1.414-1.415 1 1 0 0 1 0 1.415zm-3.414 4a1 1 0 1 0 1.414-1.414v-.001a1 1 0 0 0-1.415 1.414z" />'+
+                        '</svg><svg id ='+ projectData[0][20]+'_4'+[j]+' xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 16 16" class="done icon"  fill= "#0a3444" > <path  d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm10.03 4.97a.75.75 0 0 1 .011 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.75.75 0 0 1 1.08-.022z"/> </svg><div class="toolbox" style=background-color:transparent;" ><span>' + tooltip + ' — \n'+
+                       formattedDate1 + ' ～ '+ formattedDate2 + '</span></div> </li></ul></div>';
+                      
+         $('.gantt__row-first:contains("' + secondElement + '")').siblings('.gantt__row-bars').append(rowBars);
+         
+        }
+      }}}
+      
+     $(".gantt__row-bars").each(function() {
+  if ($(this).children("li").length === 0) {
+    $(this).parent(".gantt__row").addClass("empty");
+  } else {
+    $(this).parent(".gantt__row").removeClass("empty");
+  }
+})
+document.querySelector(".add-event-menu").style.display = "none"
+const inputs = document.querySelectorAll('.add-event-menu input');
+inputs.forEach(input => input.value = ''); 
+inputs.forEach(input => {input.disabled = false;});
+setTimeout(function() {
+    anim.style.display="none"},2000);
+    const liElements = document.querySelectorAll("li");
+ liElements.forEach(li => {
+  
+   let clickedOnce = false;
+
+li.addEventListener("click", function() { 
+  if (!clickedOnce) {
+    // Show the trashbin and edit buttons
+    $(this).find(".trashbin").animate({width: 'toggle'}) ;
+    $(this).find(".edit").animate({width: 'toggle'}) ;
+    $(this).find(".sple").animate({width: 'toggle'}) ;
+     $(this).find(".done").animate({width: 'toggle'}) ;
+    clickedOnce = true;
+  }
+});
+li.addEventListener("dblclick", function() {
+  // Hide the toolbox and trashbin/edit buttons on double-click
+  $(this).find(".trashbin").animate({width: 'toggle'}) ;
+  $(this).find(".edit").animate({width: 'toggle'}) ;
+   $(this).find(".sple").animate({width: 'toggle'}) ;
+   $(this).find(".done").animate({width: 'toggle'}) ;
+  clickedOnce = false;
+});
+
+    const trashbin = li.querySelector(".trashbin");
+trashbin.addEventListener("click", function(event) {
+  event.stopPropagation();
+  let liID = trashbin.id;
+  let [realid, nb] =liID.split("_");
+  if (window.confirm("Are you sure you want to delete this row?")) {
+    google.script.run.withSuccessHandler(function() {
+      //console.log("The ID is :" + realid);
+      trashbin.parentNode.remove();
+      $(".gantt__row-bars").each(function() {
+        if ($(this).children("li").length === 0) {
+          $(this).parent(".gantt__row").addClass("empty");
+        } else {
+          $(this).parent(".gantt__row").removeClass("empty");
+        }
+      });
+    }).remove(realid);
+  }
+});
+
+    const penedit=li.querySelector(".edit");
+    penedit.addEventListener("click",function(event){
+      event.stopPropagation();
+      event.preventDefault(); 
+      let rowID=penedit.id;
+      let [realid, nb] =rowID.split("_");
+      document.querySelector(".add-event-menu").style.display = "block";
+     google.script.run.withSuccessHandler(function(data){
+  //console.log("The ID is :" + rowID);
+  const rowData = JSON.parse(data.rangeArray); // Parse the JSON string to an object
+  let task = document.querySelector(".task");
+  let startTime = document.querySelector(".start-date");
+  let dur = document.querySelector(".duration");
+  let maint_time = document.querySelector(".maintenance");
+let calib_time= document.querySelector(".calibration");
+let prep_time = document.querySelector(".preparation");
+let end_time=document.querySelector(".end_phase");
+let manip_time=document.querySelector(".manipulation");
+let test_time=document.querySelector(".test");
+  let gmao = document.querySelector('.gmao');
+  let name = document.querySelector('.people');
+  let editid= document.querySelector('.editID')
+  let thyme =rowData[0][3];
+  task.value = rowData[0][2];
+    maint_time.value = rowData[0][4];
+    calib_time.value = rowData[0][5];
+     prep_time.value = rowData[0][6];
+     end_time.value = rowData[0][9];
+     manip_time.value = rowData[0][7];
+     test_time.value = rowData[0][8];
+ 
+  // loop through all options of the gmao select element
+for (let i = 0; i < gmao.options.length; i++) {
+  // check if the option's value matches the desired string
+  if (gmao.options[i].value === rowData[0][0]) {
+    // set the selectedIndex property to the index of the matching option
+    gmao.selectedIndex = i;
+    break; // exit the loop since we found the matching option
+  }
+}
+// loop through all options of the name select element
+for (let i = 0; i < name.options.length; i++) {
+  // check if the option's value matches the desired string
+  if (name.options[i].value === rowData[0][1]) {
+    // set the selectedIndex property to the index of the matching option
+    name.selectedIndex = i;
+    break; // exit the loop since we found the matching option
+  }
+}
+  editid.textContent=realid;
+  //console.log(realid);
+  let formattedDate = thyme.toLocaleString('fr-FR', {year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'}).replace(/\./g, '-').replace(' ', 'T');
+  startTime.value=formattedDate.substring(1,17);
+   document.querySelector(".submit").classList.add("flag");
+  if (document.querySelector(".add-event-menu").style.display === "none") {
+    document.querySelector(".add-event-menu").style.display = "block";
+  } 
+}).getrowdata(realid);
+    });
+    const spledit = li.querySelector(".sple");
+    spledit.addEventListener("click",function(event){
+      event.stopPropagation();
+      event.preventDefault();
+      let rowID=spledit.id; 
+      let [realid, nb] =rowID.split("_");
+      google.script.run.withSuccessHandler(function(){
+        if(li.classList.contains('stripes')){
+          li.classList.remove('stripes');
+        }
+        else { li.classList.add('stripes')}
+      }).received(realid);
+    })
+  const donedit=li.querySelector(".done");
+  donedit.addEventListener("click",function(event){
+event.stopPropagation();
+      event.preventDefault();
+      let rowID=spledit.id; 
+      let [realid, nb] =rowID.split("_");
+      google.script.run.withSuccessHandler(function(){
+        if(li.classList.contains('finished')){
+          li.classList.remove('finished');
+        }
+        else { li.classList.add('finished')}
+      }).received1(realid);
+  })
+})
+;}).getlastrowdata()}).setdata(newEvent,rowid);
+this.classList.remove("flag");
+  }
+  else if (rowid>=2){ 
+    // Create the new element 
+    newEvent = addatask(swatch);
+    console.log(newEvent);
+    if(newEvent===undefined){anim.style.display="none"; return}
+         rowid=parseInt(rowid-1);
+         let milestones = [];
+    for(let k = 1; k <= rowid; k++) {
+            milestones[k]=addamilestone(swatch,k);
+      //console.log(milestones[k]);
+      }
+      milestones[rowid+1]=newEvent;
+     for(let l=1; l<=rowid+1; l++){
+         
+           
+         google.script.run.withSuccessHandler(function() {
+           console.log("call send")
+           setTimeout(function() {if(l===rowid+1) {
+       google.script.run.withSuccessHandler(function(data){
+         console.log("call getdata")
+      projectData = JSON.parse(data.rangeArray); 
+      
+    let toggle = document.querySelector('.tog');
+   let outputContainer = document.querySelector(".gantt");
+    let gantcontainer = document.querySelector(".reset");
+    let selectWeekNum = document.querySelector(".selectweeknum")[document.querySelector(".selectweeknum").selectedIndex];
+    let selectedWeekNum = selectWeekNum.textContent;
+       let projectElements = [];
+        var style;
+                for (p=0;p<projectData.length;p++){
+        let stweek = projectData[p][18];
+        [stwk , sty]=stweek.split("-");
+        let fweek=projectData[p][19];
+        [fwk , fy]=fweek.split("-");
+        let gmao=projectData[p][0];
+        [gmao_number,gmao_name]=gmao.split("-");
+        if (projectData[p][11]===1){style='class="stripes"'}
+        else if (projectData[p][12]===1){style='class="finished"'}
+        else {style=""}
+        [abv, wnm]=selectedWeekNum.split(" ");
+    [mnth, yearsel]=monthSpan.textContent.split(" ");
+     if (parseInt(wnm) >= parseInt(stwk) && parseInt(wnm) <= parseInt(fwk) ) {
+       if (parseInt(yearsel)=== parseInt(sty)|| parseInt(yearsel)===parseInt(fy)){
+        var tooltip;
+       
+        if (toggle.checked && (projectData[p][4] >= 0 || projectData[p][5] >= 0 || projectData[p][8] >= 0 || projectData[p][7] >= 0)) {
+  secondElement = gmao_number;
+  tooltip = projectData[p][1];
+  projectElements = [projectData[p][4], projectData[p][5], projectData[p][7], projectData[p][8]].filter(Boolean);
+} else if (!toggle.checked && (projectData[p][4] >= 0 || projectData[p][5] >= 0 || projectData[p][6] >= 0 || projectData[p][7] >= 0 || projectData[p][9] >= 0)) {
+  secondElement = projectData[p][1];
+  tooltip = gmao_number;
+  projectElements = [projectData[p][4], projectData[p][5], projectData[p][6], projectData[p][7], projectData[p][9]].filter(Boolean);
+} 
+var used;
+used=false;
+var used2;
+used2=false;
+var used3;
+used3=false;
+console.log(projectElements);
+ if (projectElements.length > 0) {
+   for (let j = 0; j <= projectElements.length-1; j++) {
+         var start_day;
+         var end_day;
+         var subtitle;
+         var time1;
+         var time2;
+         var formattedDate1;
+         var formattedDate2;
+         if (projectData[p][6]===projectElements[j] && !used && !toggle.checked ){
+           if (parseInt(wnm)===parseInt(stwk)){
+           start_day=projectData[p][16];
+           end_day = projectData[p][16];
+           subtitle = " - Preparation";
+           used=true;
+            time1 = projectData[p][3];
+         formattedDate1 = time1.substring(6, 17).replace("T", " ");
+        formattedDate1 = formattedDate1.replace("-","/");
+         time2 = projectData[p][14];
+         formattedDate2 = time2.substring(6, 17).replace("T", " ");
+        formattedDate2 = formattedDate2.replace("-","/");
+           }
+           else{used=true; continue;}
+         }
+         else if(projectData[p][9]===projectElements[j]&& !used2 &&!toggle.checked){
+           if (parseInt(wnm)===parseInt(fwk)){
+           start_day=projectData[p][17];
+           end_day = projectData[p][17];
+           subtitle = " - End Phase";
+           used2=true;
+             time1 = projectData[p][15];
+         formattedDate1 = time1.substring(6, 17).replace("T", " ");
+        formattedDate1 = formattedDate1.replace("-","/");
+         time2 = projectData[p][13];
+         formattedDate2 = time2.substring(6, 17).replace("T", " ");
+        formattedDate2 = formattedDate2.replace("-","/");
+           }
+           else{used2=true; continue;}
+         }
+         else if(projectData[p][8]===projectElements[j]&& !used3 && toggle.checked) {
+           if(j>0){time1 = projectData[p][14];
+         formattedDate1 = time1.substring(6, 17).replace("T", " ");
+        formattedDate1 = formattedDate1.replace("-","/");
+        time2 = projectData[p][15];
+         formattedDate2 = time2.substring(6, 17).replace("T", " ");
+        formattedDate2 = formattedDate2.replace("-","/");}
+        else{time1 = projectData[p][3];
+         formattedDate1 = time1.substring(6, 17).replace("T", " ");
+        formattedDate1 = formattedDate1.replace("-","/");
+        time2 = projectData[p][13];
+         formattedDate2 = time2.substring(6, 17).replace("T", " ");
+        formattedDate2 = formattedDate2.replace("-","/");}
+           used3=true;
+           subtitle="";
+         if(parseInt(fwk)===parseInt(stwk)) {
+           start_day=projectData[p][16];
+           end_day=projectData[p][17];
+         }
+         else if (parseInt(wnm) ===parseInt(stwk)){
+           start_day=projectData[p][16];
+            end_day="8";
+         }
+         else if (parseInt(wnm) === parseInt(fwk)){
+           end_day=projectData[p][17];
+            start_day="1";
+         }
+         else {
+           start_day="1";
+           end_day="8";
+         }}
+         else if(!used3 && projectData[p][8]!==projectElements[j]) {
+           if(j>0){time1 = projectData[p][14];
+         formattedDate1 = time1.substring(6, 17).replace("T", " ");
+        formattedDate1 = formattedDate1.replace("-","/");
+        time2 = projectData[p][15];
+         formattedDate2 = time2.substring(6, 17).replace("T", " ");
+        formattedDate2 = formattedDate2.replace("-","/");}
+        else{time1 = projectData[p][3];
+         formattedDate1 = time1.substring(6, 17).replace("T", " ");
+        formattedDate1 = formattedDate1.replace("-","/");}
+        time2 = projectData[p][13];
+         formattedDate2 = time2.substring(6, 17).replace("T", " ");
+        formattedDate2 = formattedDate2.replace("-","/");
+           used3=true;
+           subtitle="";
+         if(parseInt(fwk)===parseInt(stwk)) {
+           start_day=projectData[p][16];
+           end_day=projectData[p][17];
+         }
+         else if (parseInt(wnm) === parseInt(stwk)){
+           start_day=projectData[p][16];
+            end_day="8";
+         }
+         else if (parseInt(wnm) === parseInt(fwk)){
+           end_day=projectData[p][17];
+            start_day="1";
+         }
+         else {
+           start_day="1";
+           end_day="8";
+         }}
+        else{used3=true; continue;}
+        if(parseInt(end_day)===0){
+           end_day="8";
+         }
+         if(parseInt(start_day)===0){
+           start_day="1";
+         }
+        
+      
+        let rowBars = '<li data-help="Click to open toolbox:\n ・Bin is to delete a task\n ・Pen is to edit \n ・Test tube is to change sample status \n ・Checkbox is to set the task to done" style="grid-column: ' + start_day + ' / ' + end_day + 
+         '; background-color:'+ projectData[p][10] + ';"'+style+'>' + projectData[p][2] + "<span style='font-size:12px';>"+subtitle+"</span>"+
+                      '<svg id ='+ projectData[p][20]+ '_'+[j]+' class= "trashbin icon" width="15" height="15" viewBox="0 0 22 22" fill= "#0a3444" xmlns="http://www.w3.org/2000/svg" >'+
+                      '<path  d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7H6V19ZM8 9V17H16V9H8ZM15.5 4L14.5 3H9.5L8.5 4H5V6H19V4H15.5Z" />'+
+                      '</svg><svg id ='+ projectData[p][20]+'_2'+[j]+' class= "edit icon" width="15" height="15" viewBox="0 0 22 22" fill= "#0a3444" xmlns="http://www.w3.org/2000/svg" >'+
+                    '<path  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>'+
+                        '</svg><svg id ='+ projectData[p][20]+'_3'+[j]+' class= "sple icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 22 22" fill= "#0a3444" >'+
+                        '<path    d="M6 2a1 1 0 0 0 0 2h1v13a5 5 0 0 0 10 0V4h1a1 1 0 1 0 0-2H6zm3 5V4h6v3H9zm4.708 5.708a1 1 0 0 1-1.414 0h-.001a1 1 0 0 1 1.414-1.415 1 1 0 0 1 0 1.415zm-3.414 4a1 1 0 1 0 1.414-1.414v-.001a1 1 0 0 0-1.415 1.414z" />'+
+                        '</svg><svg id ='+ projectData[p][20]+'_4'+[j]+' xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 16 16" class="done icon"  fill= "#0a3444"> <path  d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm10.03 4.97a.75.75 0 0 1 .011 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.75.75 0 0 1 1.08-.022z"/> </svg><div class="toolbox" style=background-color:transparent;" ><span>' + tooltip + ' — \n'+
+                       formattedDate1 + ' ～ '+ formattedDate2 + '</span></div> </li></ul></div>';
+                      
+         $('.gantt__row-first:contains("' + secondElement + '")').siblings('.gantt__row-bars').append(rowBars);
+         
+        }
+      }}}}
+     $(".gantt__row-bars").each(function() {
+  if ($(this).children("li").length === 0) {
+    $(this).parent(".gantt__row").addClass("empty");
+  } else {
+    $(this).parent(".gantt__row").removeClass("empty");
+  }
+});
+      document.querySelector(".add-event-menu").style.display = "none";
+     const inputs = document.querySelectorAll('.add-event-menu input');
+inputs.forEach(input => input.value = ''); 
+inputs.forEach(input => {input.disabled = false;});
+setTimeout(function() {
+    anim.style.display="none"},2000);
+    const liElements = document.querySelectorAll("li");
+ liElements.forEach(li => {
+  
+   let clickedOnce = false;
+
+li.addEventListener("click", function() { 
+  if (!clickedOnce) {
+    // Show the trashbin and edit buttons
+    $(this).find(".trashbin").animate({width: 'toggle'}) ;
+    $(this).find(".edit").animate({width: 'toggle'}) ;
+    $(this).find(".sple").animate({width: 'toggle'}) ;
+     $(this).find(".done").animate({width: 'toggle'}) ;
+    clickedOnce = true;
+  }
+});
+li.addEventListener("dblclick", function() {
+  // Hide the toolbox and trashbin/edit buttons on double-click
+  $(this).find(".trashbin").animate({width: 'toggle'}) ;
+  $(this).find(".edit").animate({width: 'toggle'}) ;
+   $(this).find(".sple").animate({width: 'toggle'}) ;
+   $(this).find(".done").animate({width: 'toggle'}) ;
+  clickedOnce = false;
+});
+
+    const trashbin = li.querySelector(".trashbin");
+trashbin.addEventListener("click", function(event) {
+  event.stopPropagation();
+  let liID = trashbin.id;
+  let [realid, nb] =liID.split("_");
+  if (window.confirm("Are you sure you want to delete this row?")) {
+    google.script.run.withSuccessHandler(function() {
+      //console.log("The ID is :" + realid);
+      trashbin.parentNode.remove();
+      $(".gantt__row-bars").each(function() {
+        if ($(this).children("li").length === 0) {
+          $(this).parent(".gantt__row").addClass("empty");
+        } else {
+          $(this).parent(".gantt__row").removeClass("empty");
+        }
+      });
+    }).remove(realid);
+  }
+});
+
+    const penedit=li.querySelector(".edit");
+    penedit.addEventListener("click",function(event){
+      event.stopPropagation();
+      event.preventDefault(); 
+      let rowID=penedit.id;
+      let [realid, nb] =rowID.split("_");
+      document.querySelector(".add-event-menu").style.display = "block";
+     google.script.run.withSuccessHandler(function(data){
+  //console.log("The ID is :" + rowID);
+  const rowData = JSON.parse(data.rangeArray); // Parse the JSON string to an object
+  let task = document.querySelector(".task");
+  let startTime = document.querySelector(".start-date");
+  let dur = document.querySelector(".duration");
+  let maint_time = document.querySelector(".maintenance");
+let calib_time= document.querySelector(".calibration");
+let prep_time = document.querySelector(".preparation");
+let end_time=document.querySelector(".end_phase");
+let manip_time=document.querySelector(".manipulation");
+let test_time=document.querySelector(".test");
+  let gmao = document.querySelector('.gmao');
+  let name = document.querySelector('.people');
+  let editid= document.querySelector('.editID')
+  let thyme =rowData[0][3];
+  task.value = rowData[0][2];
+    maint_time.value = rowData[0][4];
+    calib_time.value = rowData[0][5];
+     prep_time.value = rowData[0][6];
+    end_time.value = rowData[0][9];
+     manip_time.value = rowData[0][7];
+     test_time.value = rowData[0][8];
+ 
+  // loop through all options of the gmao select element
+for (let i = 0; i < gmao.options.length; i++) {
+  // check if the option's value matches the desired string
+  if (gmao.options[i].value === rowData[0][0]) {
+    // set the selectedIndex property to the index of the matching option
+    gmao.selectedIndex = i;
+    break; // exit the loop since we found the matching option
+  }
+}
+// loop through all options of the name select element
+for (let i = 0; i < name.options.length; i++) {
+  // check if the option's value matches the desired string
+  if (name.options[i].value === rowData[0][1]) {
+    // set the selectedIndex property to the index of the matching option
+    name.selectedIndex = i;
+    break; // exit the loop since we found the matching option
+  }
+}
+  editid.textContent=realid;
+  //console.log(realid);
+  let formattedDate = thyme.toLocaleString('fr-FR', {year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'}).replace(/\./g, '-').replace(' ', 'T');
+  startTime.value=formattedDate.substring(1,17);
+   document.querySelector(".submit").classList.add("flag");
+  if (document.querySelector(".add-event-menu").style.display === "none") {
+    document.querySelector(".add-event-menu").style.display = "block";
+  } 
+}).getrowdata(realid);
+    });
+    const spledit = li.querySelector(".sple");
+    spledit.addEventListener("click",function(event){
+      event.stopPropagation();
+      event.preventDefault();
+      let rowID=spledit.id; 
+      let [realid, nb] =rowID.split("_");
+      google.script.run.withSuccessHandler(function(){
+        if(li.classList.contains('stripes')){
+          li.classList.remove('stripes');
+        }
+        else { li.classList.add('stripes')}
+      }).received(realid);
+    })
+  const donedit=li.querySelector(".done");
+  donedit.addEventListener("click",function(event){
+event.stopPropagation();
+      event.preventDefault();
+      let rowID=spledit.id; 
+      let [realid, nb] =rowID.split("_");
+      google.script.run.withSuccessHandler(function(){
+        if(li.classList.contains('finished')){
+          li.classList.remove('finished');
+        }
+        else { li.classList.add('finished')}
+      }).received1(realid);
+  })
+})
+     }).getmilestonedata(l);}})},3000).send(milestones[l]);}
+    }
+     
+    
+else {
+  newEvent = addatask(swatch);
+  console.log(newEvent);
+  if(newEvent===undefined){anim.style.display="none"; return}
+  google.script.run.withSuccessHandler(function() {
+      google.script.run.withSuccessHandler(function(data){
+        //console.log("data:"+data);
+      projectData = JSON.parse(data.rangeArray);    
+    let toggle = document.querySelector('.tog');
+   let outputContainer = document.querySelector(".gantt");
+    let gantcontainer = document.querySelector(".reset");
+    let selectWeekNum = document.querySelector(".selectweeknum")[document.querySelector(".selectweeknum").selectedIndex];
+    let selectedWeekNum = selectWeekNum.textContent;
+       let projectElements = [];
+        var style
+        let stweek = projectData[0][18];
+        [stwk , sty]=stweek.split("-");
+        let fweek=projectData[0][19];
+        [fwk , fy]=fweek.split("-");
+        let gmao=projectData[0][0];
+        [gmao_number , gmao_name]=gmao.split("-");
+        if (projectData[0][11]===1){style='class="stripes"'}
+        else if (projectData[0][12]===1){style='class="finished"'}
+        else {style=""}
+        [abv, wnm]=selectedWeekNum.split(" ");
+    
+     if (parseInt(wnm) >= parseInt(stwk) && parseInt(wnm) <= parseInt(fwk)) {
+        var tooltip;
+       
+        if (toggle.checked && (projectData[0][4] >= 0 || projectData[0][5] >= 0 || projectData[0][8] >= 0 || projectData[0][7] >= 0)) {
+  secondElement = gmao_number;
+  tooltip = projectData[0][1];
+  projectElements = [projectData[0][4], projectData[0][5], projectData[0][7], projectData[0][8]].filter(Boolean);
+ 
+} else if (!toggle.checked && (projectData[0][4] >= 0 || projectData[0][5] >= 0 || projectData[0][6] >= 0 || projectData[0][7] >= 0 || projectData[0][9] >= 0)) {
+  secondElement = projectData[0][1];
+  tooltip = gmao_number;
+  projectElements = [projectData[0][4], projectData[0][5], projectData[0][6], projectData[0][7], projectData[0][9]].filter(Boolean);
+} 
+ console.log(projectElements);
+var used;
+used=false;
+var used2;
+used2=false;
+var used3;
+used3=false;
+
+ if (projectElements.length > 0) {
+   for (let j = 0; j <= projectElements.length-1; j++) {
+     console.log(j);
+     console.log(projectData);
+         var start_day;
+         var end_day;
+         var subtitle;
+         var time1;
+         var time2;
+         var formattedDate1;
+         var formattedDate2;
+         if (projectData[0][6]===projectElements[j] && !used && !toggle.checked ){
+           if (parseInt(wnm)===parseInt(stwk)){
+           start_day=projectData[0][16];
+           end_day = projectData[0][16];
+           subtitle = " - Preparation"
+           used=true
+            time1 = projectData[0][3];
+         formattedDate1 = time1.substring(6, 17).replace("T", " ");
+        formattedDate1 = formattedDate1.replace("-","/");
+         time2 = projectData[0][14];
+         formattedDate2 = time2.substring(6, 17).replace("T", " ");
+        formattedDate2 = formattedDate2.replace("-","/");
+           }
+           else{used=true; continue}
+         }
+         else if(projectData[0][9]===projectElements[j]&& !used2 &&!toggle.checked){
+           if (parseInt(wnm)===parseInt(fwk)){
+           start_day=projectData[0][17];
+           end_day = projectData[0][17];
+           subtitle = " - End Phase"
+           used2=true
+             time1 = projectData[0][15];
+         formattedDate1 = time1.substring(6, 17).replace("T", " ");
+        formattedDate1 = formattedDate1.replace("-","/");
+         time2 = projectData[0][13];
+         formattedDate2 = time2.substring(6, 17).replace("T", " ");
+        formattedDate2 = formattedDate2.replace("-","/");
+           }
+           else{used2=true; continue}
+         }
+         else if(projectData[0][8]===projectElements[j]&& !used3 && toggle.checked) {
+           if(j>0){time1 = projectData[0][14];
+         formattedDate1 = time1.substring(6, 17).replace("T", " ");
+        formattedDate1 = formattedDate1.replace("-","/");
+        time2 = projectData[0][15];
+         formattedDate2 = time2.substring(6, 17).replace("T", " ");
+        formattedDate2 = formattedDate2.replace("-","/");}
+        else{time1 = projectData[0][3];
+         formattedDate1 = time1.substring(6, 17).replace("T", " ");
+        formattedDate1 = formattedDate1.replace("-","/");
+        time2 = projectData[0][13];
+         formattedDate2 = time2.substring(6, 17).replace("T", " ");
+        formattedDate2 = formattedDate2.replace("-","/");}
+           used3=true;
+           subtitle="";
+         if(parseInt(fwk)===parseInt(stwk)) {
+           start_day=projectData[0][16];
+           end_day=projectData[0][17];
+         }
+         else if (parseInt(wnm) === parseInt(stwk)){
+           start_day=projectData[0][16];
+            end_day="8";
+         }
+         else if (parseInt(wnm) === parseInt(fwk)){
+           end_day=projectData[0][17];
+            start_day="1";
+         }
+         else {
+           start_day="1";
+           end_day="8";
+         }}
+         else if(!used3 && projectData[0][8]!==projectElements[j]) {
+           if(j>0){time1 = projectData[0][14];
+         formattedDate1 = time1.substring(6, 17).replace("T", " ");
+        formattedDate1 = formattedDate1.replace("-","/");
+        time2 = projectData[0][15];
+         formattedDate2 = time2.substring(6, 17).replace("T", " ");
+        formattedDate2 = formattedDate2.replace("-","/");}
+        else{time1 = projectData[0][3];
+         formattedDate1 = time1.substring(6, 17).replace("T", " ");
+        formattedDate1 = formattedDate1.replace("-","/");}
+        time2 = projectData[0][13];
+         formattedDate2 = time2.substring(6, 17).replace("T", " ");
+        formattedDate2 = formattedDate2.replace("-","/");
+           used3=true;
+           subtitle="";
+         if(parseInt(fwk)===parseInt(stwk)) {
+           start_day=projectData[0][16];
+           end_day=projectData[0][17];
+         }
+         else if (parseInt(wnm) === parseInt(stwk)){
+           start_day=projectData[0][16];
+            end_day="8";
+         }
+         else if (parseInt(wnm) === parseInt(fwk)){
+           end_day=projectData[0][17];
+            start_day="1";
+         }
+         else {
+           start_day="1";
+           end_day="8";
+         }}
+        else{used3=true; continue}
+         if(parseInt(end_day)===0){
+           end_day="8";
+         }
+         if(parseInt(start_day)===0){
+           start_day="1";
+         }
+        
+         console.log(time1);
+         console.log(time2);
+      
+        let rowBars = '<li data-help="Click to open toolbox:\n ・Bin is to delete a task\n ・Pen is to edit \n ・Test tube is to change sample status \n・ Checkbox is to set the task to done" style="grid-column: ' + start_day + ' / ' + end_day + 
+         '; background-color:'+ projectData[0][10] + ';"'+style+'>' + projectData[0][2] + "<span style='font-size:12px';>"+subtitle+"</span>"+
+                      '<svg id ='+ projectData[0][20]+ '_'+[j]+' class= "trashbin icon" width="15" height="15" viewBox="0 0 22 22" fill= "#0a3444" xmlns="http://www.w3.org/2000/svg" >'+
+                      '<path  d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7H6V19ZM8 9V17H16V9H8ZM15.5 4L14.5 3H9.5L8.5 4H5V6H19V4H15.5Z" />'+
+                      '</svg><svg id ='+ projectData[0][20]+'_2'+[j]+' class= "edit icon" width="15" height="15" viewBox="0 0 22 22" fill= "#0a3444" xmlns="http://www.w3.org/2000/svg" >'+
+                    '<path  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>'+
+                        '</svg><svg id ='+ projectData[0][20]+'_3'+[j]+' class= "sple icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 22 22" fill= "#0a3444" >'+
+                        '<path   d="M6 2a1 1 0 0 0 0 2h1v13a5 5 0 0 0 10 0V4h1a1 1 0 1 0 0-2H6zm3 5V4h6v3H9zm4.708 5.708a1 1 0 0 1-1.414 0h-.001a1 1 0 0 1 1.414-1.415 1 1 0 0 1 0 1.415zm-3.414 4a1 1 0 1 0 1.414-1.414v-.001a1 1 0 0 0-1.415 1.414z" />'+
+                        '</svg><svg id ='+ projectData[0][20]+'_4'+[j]+' xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 16 16" class="done icon"  fill= "#0a3444" > <path  d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm10.03 4.97a.75.75 0 0 1 .011 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.75.75 0 0 1 1.08-.022z"/> </svg><div class="toolbox" style=background-color:transparent;" ><span>' + tooltip + ' — \n'+
+                       formattedDate1 + ' ～ '+ formattedDate2 + '</span></div> </li></ul></div>';
+                      
+         $('.gantt__row-first:contains("' + secondElement + '")').siblings('.gantt__row-bars').append(rowBars);
+         console.log(rowBars);
+        }
+      }}
+     $(".gantt__row-bars").each(function() {
+  if ($(this).children("li").length === 0) {
+    $(this).parent(".gantt__row").addClass("empty");
+  } else {
+    $(this).parent(".gantt__row").removeClass("empty");
+  }
+});
+      document.querySelector(".add-event-menu").style.display = "none"
+     const inputs = document.querySelectorAll('.add-event-menu input');
+inputs.forEach(input => input.value = ''); 
+inputs.forEach(input => {input.disabled = false;});
+setTimeout(function() {
+    anim.style.display="none"},2000);
+    const liElements = document.querySelectorAll("li");
+ liElements.forEach(li => {
+  
+   let clickedOnce = false;
+
+li.addEventListener("click", function() { 
+  if (!clickedOnce) {
+    // Show the trashbin and edit buttons
+    $(this).find(".trashbin").animate({width: 'toggle'}) ;
+    $(this).find(".edit").animate({width: 'toggle'}) ;
+    $(this).find(".sple").animate({width: 'toggle'}) ;
+     $(this).find(".done").animate({width: 'toggle'}) ;
+    clickedOnce = true;
+  }
+});
+li.addEventListener("dblclick", function() {
+  // Hide the toolbox and trashbin/edit buttons on double-click
+  $(this).find(".trashbin").animate({width: 'toggle'}) ;
+  $(this).find(".edit").animate({width: 'toggle'}) ;
+   $(this).find(".sple").animate({width: 'toggle'}) ;
+   $(this).find(".done").animate({width: 'toggle'}) ;
+  clickedOnce = false;
+});
+
+    const trashbin = li.querySelector(".trashbin");
+trashbin.addEventListener("click", function(event) {
+  event.stopPropagation();
+  let liID = trashbin.id;
+  let [realid, nb] =liID.split("_");
+  if (window.confirm("Are you sure you want to delete this row?")) {
+    google.script.run.withSuccessHandler(function() {
+      //console.log("The ID is :" + realid);
+      trashbin.parentNode.remove();
+      $(".gantt__row-bars").each(function() {
+        if ($(this).children("li").length === 0) {
+          $(this).parent(".gantt__row").addClass("empty");
+        } else {
+          $(this).parent(".gantt__row").removeClass("empty");
+        }
+      });
+    }).remove(realid);
+  }
+  
+});
+
+    const penedit=li.querySelector(".edit");
+    penedit.addEventListener("click",function(event){
+      event.stopPropagation();
+      event.preventDefault(); 
+      let rowID=penedit.id;
+      let [realid, nb] =rowID.split("_");
+      document.querySelector(".add-event-menu").style.display = "block";
+     google.script.run.withSuccessHandler(function(data){
+  //console.log("The ID is :" + rowID);
+  const rowData = JSON.parse(data.rangeArray); // Parse the JSON string to an object
+  let task = document.querySelector(".task");
+  let startTime = document.querySelector(".start-date");
+  let dur = document.querySelector(".duration");
+  let maint_time = document.querySelector(".maintenance");
+let calib_time= document.querySelector(".calibration");
+let prep_time = document.querySelector(".preparation");
+let end_time=document.querySelector(".end_phase");
+let manip_time=document.querySelector(".manipulation");
+let test_time=document.querySelector(".test");
+  let gmao = document.querySelector('.gmao');
+  let name = document.querySelector('.people');
+  let editid= document.querySelector('.editID')
+  let thyme =rowData[0][3];
+  task.value = rowData[0][2];
+    maint_time.value = rowData[0][4];
+    calib_time.value = rowData[0][5];
+     prep_time.value = rowData[0][6];
+    end_time.value = rowData[0][9];
+     manip_time.value = rowData[0][7];
+     test_time.value = rowData[0][8]
+ 
+  // loop through all options of the gmao select element
+for (let i = 0; i < gmao.options.length; i++) {
+  // check if the option's value matches the desired string
+  if (gmao.options[i].value === rowData[0][0]) {
+    // set the selectedIndex property to the index of the matching option
+    gmao.selectedIndex = i;
+    break; // exit the loop since we found the matching option
+  }
+}
+// loop through all options of the name select element
+for (let i = 0; i < name.options.length; i++) {
+  // check if the option's value matches the desired string
+  if (name.options[i].value === rowData[0][1]) {
+    // set the selectedIndex property to the index of the matching option
+    name.selectedIndex = i;
+    break; // exit the loop since we found the matching option
+  }
+}
+  editid.textContent=realid;
+  //console.log(realid);
+  let formattedDate = thyme.toLocaleString('fr-FR', {year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'}).replace(/\./g, '-').replace(' ', 'T');
+  startTime.value=formattedDate.substring(1,17);
+   document.querySelector(".submit").classList.add("flag");
+  if (document.querySelector(".add-event-menu").style.display === "none") {
+    document.querySelector(".add-event-menu").style.display = "block";
+  } 
+}).getrowdata(realid);
+    });
+    const spledit = li.querySelector(".sple");
+    spledit.addEventListener("click",function(event){
+      event.stopPropagation();
+      event.preventDefault();
+      let rowID=spledit.id; 
+      let [realid, nb] =rowID.split("_");
+      google.script.run.withSuccessHandler(function(){
+        if(li.classList.contains('stripes')){
+          li.classList.remove('stripes');
+        }
+        else { li.classList.add('stripes')}
+      }).received(realid);
+    })
+  const donedit=li.querySelector(".done");
+  donedit.addEventListener("click",function(event){
+event.stopPropagation();
+      event.preventDefault();
+      let rowID=spledit.id; 
+      let [realid, nb] =rowID.split("_");
+      google.script.run.withSuccessHandler(function(){
+        if(li.classList.contains('finished')){
+          li.classList.remove('finished');
+        }
+        else { li.classList.add('finished')}
+      }).received1(realid);
+  })
+})
+     }).getlastrowdata()}).send(newEvent); }
+     setTimeout(function() {
+    isListenerRunning = false;
+  }, 2000);
+
+});
+
+
+function createGanttChart(selectedWeekNum) {
+  google.script.run.withSuccessHandler(function(data) {
+   projectData = JSON.parse(data.data);    
+ 
+    let toggle = document.querySelector('.tog');
+   let outputContainer = document.querySelector(".gantt");
+    let gantcontainer = document.querySelector(".reset");
+    let selectWeekNum = document.querySelector(".selectweeknum")[document.querySelector(".selectweeknum").selectedIndex];
+    let selectedWeekNum = selectWeekNum.textContent;
+      for (let i = 0; i < projectData.length; i++) {
+        let projectElements = [];
+        var style
+        let gmao=projectData[i][0];
+        let stweek = projectData[i][18];
+        [stwk , sty]=stweek.split("-");
+        let fweek=projectData[i][19];
+        [fwk , fy]=fweek.split("-");
+        [gmao_number,gmao_name]=gmao.split("-");
+        console.log(gmao_number,gmao_name);
+        if (projectData[i][11]===1){style='class="stripes"'}
+        else if (projectData[i][12]===1){style='class="finished"'}
+        else {style=""}
+        [abv, wnm]=selectedWeekNum.split(" ");
+        [mnth, yearsel]=monthSpan.textContent.split(" ");
+     if (parseInt(wnm) >= parseInt(stwk) && parseInt(wnm) <= parseInt(fwk) ) {
+       if (parseInt(yearsel)=== parseInt(sty)|| parseInt(yearsel)===parseInt(fy)){
+        var tooltip;
+       
+        if (toggle.checked && (projectData[i][4] >= 0 || projectData[i][5] >= 0 || projectData[i][8] >= 0 || projectData[i][7] >= 0)) {
+  secondElement = gmao_number;
+  tooltip = projectData[i][1];
+  projectElements = [projectData[i][4], projectData[i][5], projectData[i][7], projectData[i][8]].filter(Boolean);
+} else if (!toggle.checked && (projectData[i][4] >= 0 || projectData[i][5] >= 0 || projectData[i][6] >= 0 || projectData[i][7] >= 0 || projectData[i][9] >= 0)) {
+  secondElement = projectData[i][1];
+  tooltip = gmao_number;
+  projectElements = [projectData[i][4], projectData[i][5], projectData[i][6], projectData[i][7], projectData[i][9]].filter(Boolean);
+  console.log(projectElements);
+} else {
+  continue; // skip to the next iteration if projectDataType does not match the required types
+}
+var used;
+used=false;
+var used2;
+used2=false;
+var used3;
+used3=false;
+
+ if (projectElements.length > 0) {
+   for (let j = 0; j <= projectElements.length-1; j++) {
+         var start_day;
+         var end_day;
+         var subtitle;
+         var time1;
+         var time2;
+         var formattedDate1;
+         var formattedDate2;
+         if (projectData[i][6]===projectElements[j] && !used && !toggle.checked){
+           if (parseInt(wnm)===parseInt(stwk)){
+           start_day=projectData[i][16];
+           end_day = projectData[i][16];
+           subtitle = " - Preparation"
+           used=true
+            time1 = projectData[i][3];
+         formattedDate1 = time1.substring(6, 17).replace("T", " ");
+        formattedDate1 = formattedDate1.replace("-","/");
+        
+        //console.log(formattedDate1);
+         time2 = projectData[i][14];
+         formattedDate2 =time2.substring(6, 17).replace("T", " ");
+        formattedDate2 = formattedDate2.replace("-","/");
+        
+           }
+           else{used=true; continue}
+         }
+         else if(projectData[i][9]===projectElements[j]&& !used2 && !toggle.checked){
+           if (parseInt(wnm)===parseInt(fwk)){
+           start_day=projectData[i][17];
+           end_day = projectData[i][17];
+           subtitle = " - End Phase"
+           used2=true
+             time1 = projectData[i][15];        
+         formattedDate1 = time1.substring(6, 17).replace("T", " ");
+        formattedDate1 = formattedDate1.replace("-","/");
+        
+        //console.log(formattedDate1);
+         time2 = projectData[i][13];
+         formattedDate2 =time2.substring(6, 17).replace("T", " ");
+        formattedDate2 = formattedDate2.replace("-","/");
+       
+           }
+           else{used2=true; continue}
+         }
+                 else if(projectData[i][8]===projectElements[j]&& !used3 && toggle.checked) {
+           if(j>0){time1 = projectData[i][14]; 
+         formattedDate1 = time1.substring(6, 17).replace("T", " ");
+        formattedDate1 = formattedDate1.replace("-","/");
+        
+        //console.log(formattedDate1);
+        time2 = projectData[i][15];
+         formattedDate2 =time2.substring(6, 17).replace("T", " ");
+        formattedDate2 = formattedDate2.replace("-","/");
+        }
+        else{time1 = projectData[i][3];
+         formattedDate1 = time1.substring(6, 17).replace("T", " ");
+        formattedDate1 = formattedDate1.replace("-","/");
+       
+        //console.log(formattedDate1);
+        time2 = projectData[i][13];
+         formattedDate2 =time2.substring(6, 17).replace("T", " ");
+        formattedDate2 = formattedDate2.replace("-","/");
+        }
+           used3=true;
+           subtitle="";
+         if(parseInt(fwk)===parseInt(stwk)) {
+           start_day=projectData[i][16];
+           end_day=projectData[i][17];
+         }
+         else if (parseInt(wnm) === parseInt(stwk)){
+           start_day=projectData[i][16];
+            end_day="8";
+         }
+         else if (parseInt(wnm) === parseInt(fwk)){
+           end_day=projectData[i][17];
+            start_day="1";
+         }
+         else {
+           start_day="1";
+           end_day="8";
+         }}
+          else if(!used3 && projectData[i][8]!==projectElements[j]) {
+            //console.log( projectData[i][2],projectData[i][9],j,projectElements);
+           if(j>0){time1 = projectData[i][14];
+         formattedDate1 = time1.substring(6, 17).replace("T", " ");
+        formattedDate1 = formattedDate1.replace("-","/");
+        
+        //console.log(formattedDate1);
+        
+        time2 = projectData[i][15];
+         formattedDate2 =time2.substring(6, 17).replace("T", " ");
+        formattedDate2 = formattedDate2.replace("-","/");
+        
+           }
+        else{time1 = projectData[i][3]; 
+         formattedDate1 = time1.substring(6, 17).replace("T", " ");
+        formattedDate1 = formattedDate1.replace("-","/");
+        
+        //console.log(formattedDate1);
+        time2 = projectData[i][13];
+         formattedDate2 =time2.substring(6, 17).replace("T", " ");
+        formattedDate2 = formattedDate2.replace("-","/");
+        
+        }
+           used3=true;
+           subtitle="";
+         if(parseInt(fwk)===parseInt(stwk)) {
+           start_day=projectData[i][16];
+           end_day=projectData[i][17];
+         }
+         else if (parseInt(wnm) === parseInt(stwk)){
+           start_day=projectData[i][16];
+            end_day="8";
+         }
+         else if (parseInt(wnm) === parseInt(parseInt(fwk))){
+           end_day=projectData[i][17];
+            start_day="1";
+         }
+         else {
+           start_day="1";
+           end_day="8";
+         }}
+        else{used3=true; continue}
+         if(parseInt(end_day)===0){
+           end_day="8";
+         }
+         if(parseInt(start_day)===0){
+           start_day="1";
+         }
+       
+    
+      
+        let rowBars = '<li data-help="Click to open toolbox:\n ・Bin is to delete a task\n ・Pen is to edit \n ・Test tube is to change sample status \n ・Checkbox is to set the task to done" style="grid-column: ' + start_day + ' / ' + end_day + 
+         '; background-color:'+ projectData[i][10] + ';"'+style+'>' + projectData[i][2] + "<span style='font-size:12px';>"+subtitle+"</span>"+
+                      '<svg id ='+ projectData[i][20]+ '_1'+[j]+' class= "trashbin icon" width="15" height="15" viewBox="0 0 22 22" fill= "#0a3444" xmlns="http://www.w3.org/2000/svg" >'+
+                      '<path  d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7H6V19ZM8 9V17H16V9H8ZM15.5 4L14.5 3H9.5L8.5 4H5V6H19V4H15.5Z" />'+
+                      '</svg><svg id ='+ projectData[i][20]+'_2'+[j]+' class= "edit icon" width="15" height="15" viewBox="0 0 22 22" fill= "#0a3444" xmlns="http://www.w3.org/2000/svg" >'+
+                    '<path  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>'+
+                        '</svg><svg id ='+ projectData[i][20]+'_3'+[j]+' class= "sple icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 22 22"  fill= "#0a3444" >'+
+                        '<path   d="M6 2a1 1 0 0 0 0 2h1v13a5 5 0 0 0 10 0V4h1a1 1 0 1 0 0-2H6zm3 5V4h6v3H9zm4.708 5.708a1 1 0 0 1-1.414 0h-.001a1 1 0 0 1 1.414-1.415 1 1 0 0 1 0 1.415zm-3.414 4a1 1 0 1 0 1.414-1.414v-.001a1 1 0 0 0-1.415 1.414z" />'+
+                        '</svg><svg id ='+ projectData[i][20]+'_4'+[j]+' xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 16 16" class="done icon"  fill= "#0a3444"> <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm10.03 4.97a.75.75 0 0 1 .011 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.75.75 0 0 1 1.08-.022z"/> </svg><div class="toolbox" style=background-color:transparent;" ><span>' + tooltip + ' — \n'+
+                       formattedDate1 + ' ～ '+ formattedDate2 + '</span></div> </li></ul></div>';
+                       //console.log(secondElement)
+         $('.gantt__row-first:contains("' + secondElement + '")').siblings('.gantt__row-bars').append(rowBars);
+          //console.log(rowBars);
+        }
+       
+      }}}}
+     $(".gantt__row-bars").each(function() {
+  if ($(this).children("li").length === 0) {
+    $(this).parent(".gantt__row").addClass("empty");
+  } else {
+    $(this).parent(".gantt__row").removeClass("empty");
+  }
+});
+       
+    
+  
+  const liElements = document.querySelectorAll("li");
+ liElements.forEach(li => {
+  
+   let clickedOnce = false;
+
+li.addEventListener("click", function() { 
+  if (!clickedOnce) {
+    // Show the trashbin and edit buttons
+    $(this).find(".trashbin").animate({width: 'toggle'}) ;
+    $(this).find(".edit").animate({width: 'toggle'}) ;
+    $(this).find(".sple").animate({width: 'toggle'}) ;
+     $(this).find(".done").animate({width: 'toggle'}) ;
+    clickedOnce = true;
+  }
+});
+li.addEventListener("dblclick", function() {
+  // Hide the toolbox and trashbin/edit buttons on double-click
+  $(this).find(".trashbin").animate({width: 'toggle'}) ;
+  $(this).find(".edit").animate({width: 'toggle'}) ;
+   $(this).find(".sple").animate({width: 'toggle'}) ;
+   $(this).find(".done").animate({width: 'toggle'}) ;
+  clickedOnce = false;
+});
+
+    const trashbin = li.querySelector(".trashbin");
+trashbin.addEventListener("click", function(event) {
+  event.stopPropagation();
+  let liID = trashbin.id;
+  let [realid, nb] =liID.split("_");
+  if (window.confirm("Are you sure you want to delete this row?")) {
+    google.script.run.withSuccessHandler(function() {
+      //console.log("The ID is :" + realid);
+      trashbin.parentNode.remove();
+      $(".gantt__row-bars").each(function() {
+        if ($(this).children("li").length === 0) {
+          $(this).parent(".gantt__row").addClass("empty");
+        } else {
+          $(this).parent(".gantt__row").removeClass("empty");
+        }
+      });
+    }).remove(realid);
+  }
+});
+
+    const penedit=li.querySelector(".edit");
+    penedit.addEventListener("click",function(event){
+      event.stopPropagation();
+      event.preventDefault(); 
+      let rowID=penedit.id;
+      let [realid, nb] =rowID.split("_");
+      document.querySelector(".add-event-menu").style.display = "block";
+     google.script.run.withSuccessHandler(function(data){
+  //console.log("The ID is :" + rowID);
+  const rowData = JSON.parse(data.rangeArray); // Parse the JSON string to an object
+  let task = document.querySelector(".task");
+  let startTime = document.querySelector(".start-date");
+  let dur = document.querySelector(".duration");
+  let maint_time = document.querySelector(".maintenance");
+let calib_time= document.querySelector(".calibration");
+let prep_time = document.querySelector(".preparation");
+let end_time=document.querySelector(".end_phase");
+let manip_time=document.querySelector(".manipulation");
+let test_time=document.querySelector(".test");
+  let gmao = document.querySelector('.gmao');
+  let name = document.querySelector('.people');
+  let editid= document.querySelector('.editID')
+  let thyme =rowData[0][3];
+  task.value = rowData[0][2];
+    maint_time.value = rowData[0][4];
+    calib_time.value = rowData[0][5];
+     prep_time.value = rowData[0][6];
+    end_time.value = rowData[0][9];
+     manip_time.value = rowData[0][7];
+     test_time.value = rowData[0][8]
+ 
+  // loop through all options of the gmao select element
+for (let i = 0; i < gmao.options.length; i++) {
+  // check if the option's value matches the desired string
+  if (gmao.options[i].value === rowData[0][0]) {
+    // set the selectedIndex property to the index of the matching option
+    gmao.selectedIndex = i;
+    break; // exit the loop since we found the matching option
+  }
+}
+// loop through all options of the name select element
+for (let i = 0; i < name.options.length; i++) {
+  // check if the option's value matches the desired string
+  if (name.options[i].value === rowData[0][1]) {
+    // set the selectedIndex property to the index of the matching option
+    name.selectedIndex = i;
+    break; // exit the loop since we found the matching option
+  }
+}
+  editid.textContent=realid;
+  //console.log(realid);
+  let formattedDate = thyme.toLocaleString('fr-FR', {year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'}).replace(/\./g, '-').replace(' ', 'T');
+  startTime.value=formattedDate.substring(1,17);
+   document.querySelector(".submit").classList.add("flag");
+  if (document.querySelector(".add-event-menu").style.display === "none") {
+    document.querySelector(".add-event-menu").style.display = "block";
+  } 
+}).getrowdata(realid);
+    });
+    const spledit = li.querySelector(".sple");
+    spledit.addEventListener("click",function(event){
+      event.stopPropagation();
+      event.preventDefault();
+      let rowID=spledit.id; 
+      let [realid, nb] =rowID.split("_");
+      google.script.run.withSuccessHandler(function(){
+        if(li.classList.contains('stripes')){
+          li.classList.remove('stripes');
+        }
+        else { li.classList.add('stripes')}
+      }).received(realid);
+    })
+  const donedit=li.querySelector(".done");
+  donedit.addEventListener("click",function(event){
+event.stopPropagation();
+      event.preventDefault();
+      let rowID=spledit.id; 
+      let [realid, nb] =rowID.split("_");
+      google.script.run.withSuccessHandler(function(){
+        if(li.classList.contains('finished')){
+          li.classList.remove('finished');
+        }
+        else { li.classList.add('finished')}
+      }).received1(realid);
+  })
+})
+   }).getData();
+}
+
+ 
+  const addElement=document.querySelector(".nu_plan");
+addElement.addEventListener("mouseenter",function(){
+  addElement.innerHTML = "+ Plan a task";})
+addElement.addEventListener("mouseleave",function(){
+  addElement.innerHTML = " +";})
+  addElement.addEventListener("click", function() {
+    if(document.querySelector(".add-event-menu").style.display ==="none"){
+  document.querySelector(".add-event-menu").style.display = "block";
+  const maint_time = document.querySelector(".maintenance");
+const calib_time= document.querySelector(".calibration");
+const prep_time = document.querySelector(".preparation");
+const end_time=document.querySelector(".end_phase");
+const manip_time=document.querySelector(".manipulation");
+const test_time=document.querySelector(".test");
+const gmao_select=document.querySelector(".gmao");
+let labelmaint=document.querySelector(".lb_mntc");
+gmao_select.addEventListener("change",function(){
+  let gmaov= document.querySelector('.gmao')[document.querySelector('.gmao').selectedIndex].value;
+  //console.log(gmaov);
+  if (gmaov==="5S-5S"||gmaov==="Absence-Absence"){
+    calib_time.disabled=true;
+    prep_time.disabled=true;
+    end_time.disabled=true;
+    manip_time.disabled=true;
+    test_time.disabled=true;
+    [first, second]=gmaov.split("-");
+    first=first.substring(0,3).toUpperCase();
+    labelmaint.innerHTML=first  }
+})
+maint_time.addEventListener("input",function(){
+  if(this.value.length>0){
+    calib_time.disabled=true;
+    prep_time.disabled=true;
+    end_time.disabled=true;
+    manip_time.disabled=true;
+    test_time.disabled=true;
+  }
+  else{
+    calib_time.disabled=false;
+    prep_time.disabled=false;
+    end_time.disabled=false;
+    manip_time.disabled=false;
+    test_time.disabled=false;
+  }
+})
+calib_time.addEventListener("input",function(){
+  if(this.value.length>0){
+    maint_time.disabled=true;
+    prep_time.disabled=true;
+    end_time.disabled=true;
+    manip_time.disabled=true;
+    test_time.disabled=true;
+  }
+  else{
+    maint_time.disabled=false;
+    prep_time.disabled=false;
+    end_time.disabled=false;
+    manip_time.disabled=false;
+    test_time.disabled=false;
+  }
+})
+manip_time.addEventListener("input",function(){
+  if(this.value.length>0){
+    maint_time.disabled=true;
+    calib_time.disabled=true;
+   test_time.disabled=true;
+  }
+  else{
+ maint_time.disabled=false;
+    calib_time.disabled=false;
+   test_time.disabled=false;
+  }
+})
+prep_time.addEventListener("input",function(){
+  if(this.value.length>0){
+    maint_time.disabled=true;
+    calib_time.disabled=true;
+  }
+  else{
+ maint_time.disabled=false;
+    calib_time.disabled=false;
+  }
+})
+end_time.addEventListener("input",function(){
+  if(this.value.length>0){
+    maint_time.disabled=true;
+    calib_time.disabled=true;
+  }
+  else{
+ maint_time.disabled=false;
+    calib_time.disabled=false;
+  }
+})
+test_time.addEventListener("input",function(){
+  if(this.value.length>0){
+    maint_time.disabled=true;
+    calib_time.disabled=true;
+   manip_time.disabled=true;
+  }
+  else{
+ maint_time.disabled=false;
+    calib_time.disabled=false;
+   manip_time.disabled=false;
+  }
+})
+  }
+
+  else {
+    document.querySelector(".add-event-menu").style.display = "none";
+  }}); 
+
+
+
+    function getDateFromWeekNum(weekNum,yearInt) {
+      
+    // Parse the week number and year from the string
+    const [week, number] = weekNum.split(" ");
+    const weekNumInt = parseInt(number);
+   // console.log(weekNum);
+    //console.log(weekNumInt+":weekNumInt")
+    //const yearInt = 2023;
+
+    // Get the first day of the week
+    const firstDayOfWeek = new Date(yearInt, 0, 1);
+    const dayOfWeek = firstDayOfWeek.getDay();
+    const daysUntilFirstMonday = (dayOfWeek <= 1) ? 1 - dayOfWeek : 8 - dayOfWeek;
+    firstDayOfWeek.setDate(firstDayOfWeek.getDate() + daysUntilFirstMonday);
+
+    // Calculate the date of the selected week
+    const targetWeek = firstDayOfWeek.getDate() + (7 * (weekNumInt - 1));
+    const targetDate = new Date(yearInt, 0, targetWeek);
+    //console.log("weeknumber is:"+weekNum+" targetdate is:"+targetDate);
+    return targetDate;
+  }
+function getDayName(day) {
+    switch (day) {
+      case 0:
+        return "Sun";
+      case 1:
+        return "Mon";
+      case 2:
+        return  "Tue";
+      case 3:
+        return "Wed";
+      case 4:
+        return "Thu";
+      case 5:
+        return "Fri";
+      case 6:
+        return "Sat";
+    }
+  }
+  function getMonthName(month) {
+    switch (month) {
+      case 0:
+        return "January";
+      case 1:
+        return "February";
+      case 2:
+        return "March";
+      case 3:
+        return "April";
+      case 4:
+        return "May";
+      case 5:
+        return "June";
+      case 6:
+        return "July";
+      case 7:
+        return "August";
+      case 8:
+        return "September";
+      case 9:
+        return "October";
+      case 10:
+        return "November";
+      case 11:
+        return "December";
+    }
+  }
+
+const swatchGrid = document.querySelector('#color-picker-dropdown #swatch-grid');
+const svg1=document.querySelector('.drpcancel');
+$(document).ready(function() {
+  $('#dropdown-header > span:last-child').click(function() {
+   
+     swatchGrid.style.display = swatchGrid.style.display === 'none' ? 'flex' : 'none';
+      var svg = $(this).find('svg');
+    if (svg.attr('data-state') === 'closed') {
+      svg.find('path').attr('d', 'M12 10.4377C12 10.2694 11.9327 10.101 11.8114 9.9798L9.83165 8L11.8114 6.0202C11.9327 5.89899 12 5.73064 12 5.56229C12 5.39394 11.9327 5.22559 11.8114 5.10438L10.8956 4.18855C10.7744 4.06734 10.6061 4 10.4377 4C10.2694 4 10.101 4.06734 9.9798 4.18855L8 6.16835L6.0202 4.18855C5.89899 4.06734 5.73064 4 5.56229 4C5.39394 4 5.22559 4.06734 5.10438 4.18855L4.18855 5.10438C4.06734 5.22559 4 5.39394 4 5.56229C4 5.73064 4.06734 5.89899 4.18855 6.0202L6.16835 8L4.18855 9.9798C4.06734 10.101 4 10.2694 4 10.4377C4 10.6061 4.06734 10.7744 4.18855 10.8956L5.10438 11.8114C5.22559 11.9327 5.39394 12 5.56229 12C5.73064 12 5.89899 11.9327 6.0202 11.8114L8 9.83165L9.9798 11.8114C10.101 11.9327 10.2694 12 10.4377 12C10.6061 12 10.7744 11.9327 10.8956 11.8114L11.8114 10.8956C11.9327 10.7744 12 10.6061 12 10.4377Z');
+       //$('.add-event-menu').height('150px');
+      svg.attr('data-state', 'open');
+    } else {
+           svg.find('path').attr('d', 'M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z');
+      // $('.add-event-menu').height('100px');
+      svg.attr('data-state', 'closed');
+    }
+    
+  });
+});
+
+
+
+  </script>
+  <?!= include("utils"); ?>
 </html>
