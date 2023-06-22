@@ -1,0 +1,107 @@
+<script>
+(function () {
+
+  Date.prototype.getWeek = function() {
+  var onejan = new Date(this.getFullYear(), 0, 1);
+  var week = Math.ceil((((this - onejan) / 86400000) + onejan.getDay() + 1) / 7);
+  return week;
+};
+           google.script.run.withSuccessHandler(
+          function (selectList) {
+            var select = document.querySelector(".selectweeknum");
+            for( var i=0; i<selectList.length; i++ ) {
+              var option = document.createElement("option");
+              option.text = selectList[i][0];
+              select.add(option);
+            }
+  const monthSpan= document.querySelector(".month");
+  const today = new Date();
+  let year=today.getFullYear();
+  //console.log(today);
+   var currentweeknumber = today.getWeek();
+   //console.log("week is:"+currentweeknumber);
+  let selectWeekNum = document.querySelector(".selectweeknum");
+  selectWeekNum.selectedIndex = currentweeknumber-1;
+  //console.log(selectWeekNum.selectedIndex);
+              
+                  google.script.run.withSuccessHandler(function(){
+google.script.run.withSuccessHandler(function(){
+createGanttChart(select);
+ const today = new Date(); 
+    let year=today.getFullYear();
+    let selectedIndex =  document.querySelector(".selectweeknum")[document.querySelector(".selectweeknum").selectedIndex];
+    let selectedWeekNum = selectedIndex.textContent;
+    //console.log(selectedWeekNum);
+    let date = getDateFromWeekNum(selectedWeekNum,year);
+     
+    // Update the day spans
+    google.script.run.withSuccessHandler(function(data){
+      
+      //projectData = JSON.parse(data); 
+   for (let i = 0; i < 7; i++) {
+       day = date.getDay();
+       dayOfMonth = date.getDate();
+      daySpans[i].textContent = getDayName(day) + "\n" + dayOfMonth;
+      date.setDate(date.getDate() + 1);
+      
+     
+     for(let j=0;j<data.length;j++){
+       //console.log(data[j],date.toISOString().substring(0, 10));
+       if(date.toISOString().substring(0, 10)==data[j]){
+         dataspans[i+1].classList.add("marker");
+       }
+     }
+    }}).getPublicHolidays(year);
+
+    // Update the month span
+    monthSpan.textContent = getMonthName(date.getMonth())+" "+year;
+    const anim=document.querySelector(".loader-container");
+    setTimeout(function() {
+    anim.style.display="none"},2000);
+}).deleteOldRows2()}).backup2()
+   ;
+}
+          
+        ).getSelectList();
+       google.script.run.withSuccessHandler(function(selectList) {
+   var select = document.querySelector(".gmao");
+  for (var i = 0; i < selectList.length; i++) {
+    var option = document.createElement("option");
+    option.text = selectList[i][0];
+    select.add(option);
+   
+  }
+}).getSelectList1();
+        google.script.run.withSuccessHandler(
+          function (selectList) {
+            let gantcontainer = document.querySelector(".reset");
+            var select = document.querySelector(".people");
+            for( var i=0; i<selectList.length; i++ ) {
+              var option = document.createElement("option");
+              option.text = selectList[i][0];
+              select.add(option);
+            }
+            selectList.forEach(item => {
+      //console.log(item);
+      item = JSON.stringify(item);
+      item=item.slice(2,-2);
+      let row = '<div class="gantt__row">' +
+         '<div class="gantt__row-first">' + item + '</div><ul class="gantt__row-bars">' +
+        '</ul></div>';
+      gantcontainer.innerHTML += row;
+    });
+           
+          }
+        ).getSelectList2();
+        google.script.run.withSuccessHandler(function(selectList){
+          var select = document.querySelector(".machlist");
+          for(var i = 0; i<selectList.length;i++){
+            var option = document.createElement("option");
+            option.text=selectList[i][0];
+            select.add(option);
+          }
+        }).getSelectList4();
+         
+        
+      }());
+</script>
