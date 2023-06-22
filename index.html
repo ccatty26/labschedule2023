@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <?!= include("css"); ?>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <?!= include("js"); ?>
+        <title>Lab Schedule</title>
+  </head>
+  <body>
+    <div class="scheduling"><div class="view_toggle"><button class="prev-week week" data-help="Move on to next week">&lt;</button>
+    <button class="next-week week" data-help="Move on to previous week">&gt;</button>
+    <span class="month"></span>
+    <select class="selectweeknum plan_menu" data-help="Select a week"></select>
+    <button class="nu_plan " data-help="Use to display the scheduling menu"><strong>+</strong></button>
+    <div class="tg"><div class="search-bar" data-help="Search through the schedule"><input type="text" class="plan_menu searchinp" placeholder="Search" ></div>
+    <button class="setbut plan_menu" data-help="Change the oven setting temperature">T°SET</button>
+    <ol class="sl_mac"><select id="machlist" class="machlist plan_menu"></select><input class="tempinp plan_menu"></input></ol> 
+    <span class="optxt sp" style="color:#f07e26;" data-help="Toggle view">Operator</span><input type="checkbox" id="switch" class="tog" data-help="Toggle view" /><label for="switch"class="switch" data-help="Toggle view">Toggle</label><span class="matxt sp" data-help="Toggle view">Machine</span></div></div>
+        <form class="form_plan">
+      <div class="inner-form-container">
+         <fieldset class= "add-event-menu">
+           <label for="task" class="ui" data-help="Enter task name">Task:</label>
+           <input id="task" class="task  plan_menu" autocomplete="off" required data-help="Enter task name"></input>
+         <label for="technician" class="ui" data-help="Select a person to assign the task to">Assign to:</label>
+          <select id="people" class="people plan_menu" data-help="Select a person to assign the task to"></select>
+           <label for="machine" class="ui" data-help="Select a machine to perform the task">To do with:</label>
+          <select id="gmao" class="gmao plan_menu" data-help="Select a machine to perform the task"></select>
+          <div>
+        <label for="start-date" class="ui" required data-help="Chose starting date">Start date:</label>
+        <input type="datetime-local" class="plan_menu start-date" id="start-date" name="start-date"  min="2023-01-01T08:00:00+01:00" max="2050-11-31T18:00:00+01:00" required data-help="Chose starting date">
+         <label for="ui" class="sample" data-help="Check when scheduling w/o samples">Previsionary</label>
+       <input type="checkbox" class="plan_menu checkp " data-help="Check when scheduling w/o samples"></input>
+              <div class="time_container" > <span class="titletable">TIME INPUT(h)</span>
+              <div class="grid-container" data-help="Enter required time by category.Click on the + to add a milestone and on - to remove it">
+        
+              <div ><label for = "maintenance" class="timinp lb_mntc">MAINTENANCE</label>
+            <input class="time plan_menu duration maintenance" type="number" lang="fr" min="0"></input></div>
+            <div ><label for = "calibration" class="timinp">CALIBRATION</label>
+            <input class="time plan_menu duration calibration" type="number" lang="fr" min="0"></input></div>
+            <div ></div>
+            <div style="border-right: 1px solid rgba(0,0,0,0.1)" ></div>
+            <div ></div>
+            <div ><label for = "prepa"class="timinp">PREPARATION</label>
+            <input class="time plan_menu duration preparation" type="number" lang="fr" min="0"></input></div>
+            <div ><label for = "manipulation" class="timinp">MANIPULATION</label>
+            <input class="time plan_menu duration manipulation" type="number"lang="fr" min="0"></input></div>
+            <div ><label for = "test_test" class="timinp">TEST</label>
+            <input class="time plan_menu duration test" type="number" lang="fr" min="0"></input></div>
+            <div ><label for = "end_phase" class="timinp">RESULTS</label>
+            <input class="time plan_menu duration end_phase" type="number" min="0"></input></div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#000000" class="addicon" id="add-time" viewBox="0 0 16 16" > <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/> </svg>
+       </div></div>
+           <div id="color-picker-dropdown">
+  <div id="dropdown-header" class='plan_menu'>
+    <span id="swatext">Select Color</span>
+         <span ><svg class = "drpcancel" width="16" height="16" viewBox="0 0 16 16"  xmlns="http://www.w3.org/2000/svg">
+       <path  d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" /> 
+      </svg>
+    </span>
+  </div>
+  <div id="swatch-grid">
+    <div class="swatch elchkd">
+      <svg id="check" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M7 7.176l2.593-2.593a1.99 1.99 0 112.814 2.814L7 12.804 3.593 9.397a1.99 1.99 0 112.814-2.814L7 7.176z" fill="#000" fill-opacity=".2" />
+        <path d="M4.3 8.69a.99.99 0 011.4-1.4L7 8.59l3.3-3.3a.99.99 0 111.4 1.4L7 11.39l-2.7-2.7z" fill="#fff" />
+      </svg>
+    </div>
+    <div class="swatch"></div>
+    <div class="swatch"></div>
+    <div class="swatch"></div>
+    <div class="swatch"></div>
+    <div class="swatch"></div>
+    <div class="swatch"></div>
+    <div class="swatch"></div>
+    <div class="swatch"></div>
+    <div class="swatch"></div>
+    <div class="swatch"></div>
+    <div class="swatch"></div>
+    <div class="swatch"></div>
+    <div class="swatch"></div>
+    <div class="swatch"></div>
+    <div class="swatch"></div>
+  </div>
+</div>
+        <button  class="submit plan_menu" data-help="Add the task to the schedule">OK</button></div></fieldset>
+        </div>
+    </form>
+    <div class ="table_container" data-help="These are your search results">
+    <table>
+      <tr class="table_first">
+      <th class="grid-header" scope="col">TASK</th><th class="grid-header" scope="col">GMAO</th><th class="grid-header" scope="col">IN CHARGE</th><th class="grid-header" scope="col">START</th><th class="grid-header" scope="col">WEEK#</th><th class="grid-header" scope="col">END</th></tr> 
+      </table><span>Hide</span></div>
+
+       <div class="gantt" data-help="This is your schedule" >
+		<div class="gantt__row gantt__row--months">
+			<div class="gantt__row-first"></div>
+			<span class="day"></span><span class="day"></span><span class="day"></span>
+			<span class="day"></span><span class="day"></span><span class="day"></span>
+			<span class="day"></span>
+		</div>
+		<div class="gantt__row gantt__row--lines" data-month="5">
+			<span class="data"></span><span class="data"></span><span  class="data"></span>
+			<span class="data"></span><span class="data"></span><span class="data"></span>
+			<span class="marker data"></span><span class="marker data"></span>
+		</div>
+		<div class="reset"></div>
+	</div> 
+  <span class="editID"></span></div>
+  <div class="loader-container">
+  <div class="loader">
+    <div class="dot1"></div>
+    <div class="dot2"></div>
+    <div class="dot3"></div>
+  </div>
+</div>
+<span class="sign">Camille CATTY©2023</span><div id="help-button" data-help="Press Esc to Quit Help mode">?</div>
+      </body>
+    
+
+
+</html>
